@@ -4,7 +4,9 @@ using UnityEngine.InputSystem;
 public class MouseLook : MonoBehaviour
 {
     [Header("Czułość myszy")]
-    public float mouseSensitivity = 100f;
+    public float mouseSensitivityX = 100f;
+    public float mouseSensitivityY = 100f;
+
 
     private Transform playerBody;
     private float xRotation = 0f;
@@ -31,18 +33,18 @@ public class MouseLook : MonoBehaviour
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
             Cursor.lockState = CursorLockMode.None;
 
-
         // Pobierz ruch myszy
-        Vector2 delta = mouse.delta.ReadValue() * mouseSensitivity * Time.deltaTime;
+        Vector2 delta = mouse.delta.ReadValue() * Time.deltaTime;
+        float mouseX = delta.x * mouseSensitivityX;
+        float mouseY = delta.y * mouseSensitivityY;
 
         // Obrót w pionie (pitch)
-        xRotation -= delta.y;
+        xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
         transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
         // Obrót w poziomie (yaw) – ruch całego ciała
-        playerBody.Rotate(Vector3.up * delta.x);
-
+        playerBody.Rotate(Vector3.up * mouseX);
 
     }
 }

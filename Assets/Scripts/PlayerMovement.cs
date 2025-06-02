@@ -20,8 +20,13 @@ public class PlayerMovement : MonoBehaviour
     public ExitMenu exitMenu;           // publiczne zmienne z ExitMenu.cs, referencja
 
     [Header("Air Control")]
-    public float jumpControlMultiplier=0.3f;
+    public float jumpControlMultiplier=0.8f;
     private Vector3 lastGroundedDirection = Vector3.zero;
+
+    [Header("Czułość myszy")]
+    public float mouseSensitivityX = 100f;
+    public float mouseSensitivityY = 100f;
+
 
     // wektor aktualnej prędkości (bez y)
     private Vector3 currentVelocity = Vector3.zero;
@@ -48,23 +53,6 @@ public class PlayerMovement : MonoBehaviour
         if (isGrounded && verticalVelocity < 0f)
             verticalVelocity = -1f;
 
-        // skok
-        if (isGrounded && keyboard.spaceKey.wasPressedThisFrame)
-        {
-            verticalVelocity = Mathf.Sqrt(2f * gravity * jumpHeight);
-        }
-        
-        // grawitacja
-        verticalVelocity -= gravity * Time.deltaTime;
-
-        // yaw myszką
-        var mouse = Mouse.current;
-        if (mouse != null)
-        {
-            float mouseX = mouse.delta.x.ReadValue() * Time.deltaTime * 100f;
-            transform.Rotate(0f, mouseX, 0f, Space.World);
-        }
-
         // odczyt wejścia poziomego
         float h = (keyboard.dKey.isPressed ? 1f : 0f)
                 + (keyboard.aKey.isPressed ? -1f : 0f);
@@ -82,16 +70,36 @@ public class PlayerMovement : MonoBehaviour
         Vector3 inputNorm = inputDir.sqrMagnitude > 0f ? inputDir.normalized : Vector3.zero;
 
         // wektor prędkości docelowej (bez y)
-        Vector3 desiredVelocity = inputNorm * targetSpeed;
+        float airControl = isGrounded ? 1f : jumpControlMultiplier;
+        Vector3 desiredVelocity = inputNorm * targetSpeed * airControl;
+
 
         // płynne przybliżanie currentVelocity do desiredVelocity
         currentVelocity = Vector3.Lerp(currentVelocity, desiredVelocity, movementSpeedGain * Time.deltaTime);
 
+        // skok
+        if (isGrounded && keyboard.spaceKey.wasPressedThisFrame)
+        {
+            verticalVelocity = Mathf.Sqrt(2f * gravity * jumpHeight);
+        }
+
+        // grawitacja
+        verticalVelocity -= gravity * Time.deltaTime;
+
         // finalny wektor ruchu: poziomy + pionowy
-        Vector3 move = currentVelocity;
+        Vector3 move = currentVelocity; //+lastGroundedDirection
         move.y = verticalVelocity;
 
         cc.Move(move * Time.deltaTime);
         
+        //Debug.Log("curr vel = "+currentVelocity);
+        //Debug.Log("jump vel = "+lastGroundedDirection);
+        //Debug.Log("move = "+move);
+
     }
 }
+/* devLog com
+
+ruch CHYBA na razie git
+
+*/
