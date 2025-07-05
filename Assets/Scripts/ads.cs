@@ -29,6 +29,8 @@ public class SimpleADS : MonoBehaviour
 
     void Update()
     {
+        if (ExitMenu.Instance != null && ExitMenu.Instance.inputBlocked) return;
+
         bool aiming = Mouse.current != null && Mouse.current.rightButton.isPressed;
 
         targetPosition = aiming ? adsPosition : hipPosition;
