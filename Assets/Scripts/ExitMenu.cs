@@ -63,9 +63,7 @@ public class ExitMenu : MonoBehaviour
                 inputBlocked = isNowActive;  // blokuj/odblokuj wejście
 
                 SetCursor(isNowActive);
-                Debug.Log("Ustawiam kursor: visible = " + isNowActive + ", lockState = " + (isNowActive ? "None" : "Locked"));
-
-
+                //Debug.Log("Ustawiam kursor: visible = " + isNowActive + ", lockState = " + (isNowActive ? "None" : "Locked"));
             }
 
         }
