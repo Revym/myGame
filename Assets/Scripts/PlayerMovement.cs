@@ -23,9 +23,6 @@ public class PlayerMovement : MonoBehaviour
     public float jumpControlMultiplier=0.8f;
     private Vector3 lastGroundedDirection = Vector3.zero;
 
-    [Header("Czułość myszy")]
-    public float mouseSensitivityX = 100f;
-    public float mouseSensitivityY = 100f;
 
 
     // wektor aktualnej prędkości (bez y)
@@ -91,10 +88,6 @@ public class PlayerMovement : MonoBehaviour
         move.y = verticalVelocity;
 
         cc.Move(move * Time.deltaTime);
-        
-        //Debug.Log("curr vel = "+currentVelocity);
-        //Debug.Log("jump vel = "+lastGroundedDirection);
-        //Debug.Log("move = "+move);
 
     }
 }
