@@ -9,8 +9,8 @@ public class PlayerMovement : MonoBehaviour
     public float sprintMultiplier = 2f;     // mnożnik sprintu na ziemi
     [Range(0.1f, 20f)]
     public float movementSpeedGain = 8f;   // im wyższy, tym szybciej dogonisz desiredVelocity
-    public float jumpHeight = 0.8f;         // wysokość skoku
-    public float gravity = 9.81f;           // siła grawitacji
+    public float jumpHeight = 1.25f;         // wysokość skoku
+    public float gravity = 20f;           // siła grawitacji
     Vector3 jumpVector;
 
     private CharacterController cc;
