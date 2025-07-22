@@ -4,13 +4,13 @@ using System.Collections;
 
 public class NewSimpleHitscanBeam : MonoBehaviour
 {
-    //public Camera fpsCamera;
     public Transform muzzlePoint;
     //public LineRenderer lineRenderer;
     public float range = 100f;
     public float beamDuration = 0.05f;
 
     public GameObject impactEffectPrefab;
+    public GameObject muzzleFlashPrefab;
     private AudioSource audioSource;
     private AudioClip shotSound;
 
@@ -21,13 +21,20 @@ public class NewSimpleHitscanBeam : MonoBehaviour
 
     void Start()
     {
-        // ładowanie Resources/ImpactEffect.prefab
-        impactEffectPrefab=Resources.Load<GameObject>("ImpactEffect");
-        if(impactEffectPrefab == null) Debug.LogError("Didnt find Resources/ImpactEffect");
+        // ładowanie ImpactEffect.prefab
+        string impactEffectPath = "Particle effects/ImpactEffect";
+        impactEffectPrefab = Resources.Load<GameObject>(impactEffectPath);
+        if(impactEffectPrefab == null) Debug.LogError("Didnt find Resources/"+impactEffectPath);
 
-        // ładowanie Resources/Sounds/Guns/Pistol_01_Fire
-        shotSound = Resources.Load<AudioClip>("Sounds/Guns/Pistol_01_Fire");
-        if(shotSound == null) Debug.LogError("Didnt find Resources/Sounds/Guns/Pistol_01_Fire");
+        // ładowanie Pistol_01_Fire.wav
+        string gunShot01Path = "Sounds/Guns/Pistol_01_Fire";
+        shotSound = Resources.Load<AudioClip>(gunShot01Path);
+        if(shotSound == null) Debug.LogError("Didnt find Resources/"+gunShot01Path);
+
+        // ładowanie MuzzleFlash.prefab
+        string muzzleFlashPath = "Particle effects/MuzzleFlash";
+        muzzleFlashPrefab = Resources.Load<GameObject>(muzzleFlashPath);
+        if(muzzleFlashPrefab == null) Debug.LogError("Didnt find Resources/"+muzzleFlashPath);
 
         audioSource = muzzlePoint.GetComponent<AudioSource>();
         if(audioSource == null)
@@ -54,7 +61,11 @@ public class NewSimpleHitscanBeam : MonoBehaviour
         // dźwięk strzału
         if(shotSound!=null) audioSource.PlayOneShot(shotSound);
 
+        // efekt muzzle flash
+        GameObject flash = Instantiate(muzzleFlashPrefab, muzzlePoint.position, muzzlePoint.rotation, muzzlePoint);
+        Destroy(flash, 0.5f);
 
+        // strzał raycast
         Vector3 start = muzzlePoint.position;
         Vector3 direction = muzzlePoint.forward;
         Vector3 end = start + direction * range;
@@ -88,7 +99,5 @@ public class NewSimpleHitscanBeam : MonoBehaviour
     */
 }
 /*  devLog com
-
-tu na razie chyba wszystko git, raycast i particle
 
 */
