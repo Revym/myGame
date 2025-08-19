@@ -40,6 +40,7 @@ public class InstanceTintForHierarchy : MonoBehaviour
     /// <summary>
     /// Przechodzi po wszystkich rendererach w drzewie i aplikuje kolor do znalezionego materiału.
     /// </summary>
+    /// 
     public void ApplyToHierarchy()
     {
         if (mpb == null) mpb = new MaterialPropertyBlock();
