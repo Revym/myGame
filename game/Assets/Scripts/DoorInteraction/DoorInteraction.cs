@@ -22,14 +22,24 @@ public class DoorInteraction : MonoBehaviour
     // rotation
     private Quaternion startRotation;
     private Quaternion targetRotation;
+    private Quaternion closedRotation;
 
     // interaction text
-    public GameObject interactionPrefab;
+    private GameObject interactionPrefab;
     private GameObject spawnedText;
+    private Transform player;
+    private bool isInFront = false;
+    public bool textSide = false;
 
     // interaction delay
-    public float interactionCooldown = 1f;
+    [Header("Door interaction settings")]
+    public float interactionCooldown = 0.5f;
     private float nextUseTime = 0f;
+
+    // door sounds
+    private AudioSource audioSource;
+    private AudioClip doorOpen;
+    private AudioClip doorClose;
 
     //########################################
 
@@ -50,6 +60,18 @@ public class DoorInteraction : MonoBehaviour
         // connecting the text prefab from files
         interactionPrefab = Resources.Load<GameObject>("TextPrefabs/InteractionTextPrefab");
 
+        // connecting to player
+        player = GameObject.Find("Camera").transform;
+        if(player!=null) Debug.Log("[DoorInteraction.cs] Camera found and connected.");
+
+        // setting the start rotation
+        closedRotation = transform.rotation;
+
+        // connecting all audio
+        audioSource = GetComponent<AudioSource>();
+        doorOpen = Resources.Load<AudioClip>("Sounds/Doors/OpenMetalDoor");
+        doorClose = Resources.Load<AudioClip>("Sounds/Doors/CloseMetalDoor");
+        
     }
 
     void OnTriggerEnter(Collider other)
@@ -61,7 +83,9 @@ public class DoorInteraction : MonoBehaviour
             // instantiating the text
             if (spawnedText == null){
                 spawnedText = Instantiate(interactionPrefab, transform);
-                spawnedText.transform.localPosition = new Vector3(0.5f, 2f, 1f);
+                int s1 = isInFront ? 1 : -1; // based on front/back to the door
+                int s2 = textSide ? 1 : -1; // based on different pivot point
+                spawnedText.transform.localPosition = new Vector3(s1*0.35f, 1.5f, s2*0.8f);
             }
         }
     }
@@ -79,6 +103,8 @@ public class DoorInteraction : MonoBehaviour
 
     void Update()
     {
+        isInFront = DoorPlayerOrientation();
+
         if (isInsidePointer && keyboard.fKey.isPressed && Time.time>=nextUseTime)
         {
             if (keyboard == null) return;
@@ -87,6 +113,8 @@ public class DoorInteraction : MonoBehaviour
         }
     }
 
+    //---------------functions--------------------
+
     public void DoorRotate()
     {
         int rotation = antiClockwiseRotation ? -1 : 1; // rotation orientation
@@ -94,10 +122,12 @@ public class DoorInteraction : MonoBehaviour
         if (!isOpen) // closed > opening
         {
             startRotation = transform.rotation;
-            targetRotation = Quaternion.Euler(0, openDoorAngle*rotation, 0); 
+            targetRotation = closedRotation*Quaternion.Euler(0, openDoorAngle*rotation, 0); 
+            audioSource.PlayOneShot(doorOpen);
         } else { // opened > closing
             startRotation = transform.rotation;
-            targetRotation = Quaternion.Euler(0, 0, 0); 
+            targetRotation = closedRotation; 
+            audioSource.PlayOneShot(doorClose);
         }
 
         StopAllCoroutines();
@@ -116,4 +146,22 @@ public class DoorInteraction : MonoBehaviour
             yield return null;
         }
     }
+
+    private bool DoorPlayerOrientation()
+    {
+        Vector3 toPlayer = (player.position - transform.position).normalized;
+        float dot = Vector3.Dot(transform.right, toPlayer);
+
+        if (dot > 0)
+        {
+            //Debug.Log(gameObject.name+" : Front");
+            return true;
+        }
+        else
+        {
+            //Debug.Log(gameObject.name+" : Back");
+            return false;
+        }
+    }
+
 }
