@@ -62,7 +62,6 @@ public class DoorInteraction : MonoBehaviour
 
         // connecting to player
         player = GameObject.Find("Camera").transform;
-        if(player!=null) Debug.Log("[DoorInteraction.cs] Camera found and connected.");
 
         // setting the start rotation
         closedRotation = transform.rotation;

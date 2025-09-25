@@ -64,6 +64,16 @@ public class AnimationManager : MonoBehaviour
             animator.SetFloat("Shooting", idle);
         }
 
+
+        // test pose for blender and shit
+        if (keyboard.qKey.isPressed)
+        {
+            animator.SetBool("testBool", true);
+        }
+        else
+        {
+            animator.SetBool("testBool", false);
+        }
     }
 
 

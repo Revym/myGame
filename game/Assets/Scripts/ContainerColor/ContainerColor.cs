@@ -130,10 +130,10 @@ public class InstanceTintForHierarchy : MonoBehaviour
             }
 
             changedCount++;
-            Debug.Log($"[{name}] Zmieniono kolor w rendererze '{rend.name}' materiał '{mat.name}' (slot {idx}) na {tint}.");
+            //Debug.Log($"[{name}] Zmieniono kolor w rendererze '{rend.name}' materiał '{mat.name}' (slot {idx}) na {tint}.");
         }
 
-        Debug.Log($"[{name}] ApplyToHierarchy: przetworzono {renderers.Count} rendererów, zmieniono kolory w {changedCount} rendererach.");
+        //Debug.Log($"[{name}] ApplyToHierarchy: przetworzono {renderers.Count} rendererów, zmieniono kolory w {changedCount} rendererach.");
     }
 
     int DetermineColorProperty(Material mat)

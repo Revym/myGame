@@ -78,7 +78,7 @@ public class NewSimpleHitscanBeam : MonoBehaviour
             GameObject impactGO = Instantiate(impactEffectPrefab, hit.point, Quaternion.identity);
             Destroy(impactGO, 1f);
 
-            Target hitTarget = hit.collider.GetComponent<Target>();
+            RagdollActivator hitTarget = hit.collider.GetComponent<RagdollActivator>();
             if (hitTarget != null)
             {
                 hitTarget.Hit();

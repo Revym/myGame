@@ -7,7 +7,7 @@ public class MouseLookHorizontal : MonoBehaviour
     public float mouseSensitivityX = 90f;
 
     private Transform playerBody;
-    private float xRotation = 0f;
+    //private float xRotation = 0f;
     private Mouse mouse;
 
     public ExitMenu exitMenu;
