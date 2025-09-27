@@ -37,9 +37,9 @@ public class BetterADS : MonoBehaviour
 
         if(RightHand!=null && Gun!=null){
             distance = Vector3.Distance(RightHand.position, Gun.position);
-            Debug.Log("[HandGunDistance.cs] distance = " + distance);
+            //Debug.Log("[HandGunDistance.cs] distance = " + distance);
         }else{
-            Debug.LogWarning("[HandGunDistance.cs] Either of objects is null");
+            //Debug.LogWarning("[HandGunDistance.cs] Either of objects is null");
         }
 
         
