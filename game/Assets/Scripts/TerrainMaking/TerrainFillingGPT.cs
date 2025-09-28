@@ -82,13 +82,11 @@ public class TerrainFillingGPU : MonoBehaviour
             for (float z = zStart; z <= zMax; z += zStep)
             {
                 Vector3 rayStart = new Vector3(x, spawnHeight, z);
-                
+
                 if (!Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, Mathf.Infinity)) continue;
                 if (hit.collider.GetComponent<Terrain>() == null) continue;
 
-
-                //float lower = Random.Range(0f, 0.75f);
-                //float gray1 = givenHeightMap1.GetPixel(x, y).grayscale;
+                // value for lower based on designated height map
                 float lower = grassHeightMap.GetPixel((int)x, (int)z).grayscale;
 
                 // side-to-side random offset
