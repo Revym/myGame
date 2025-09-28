@@ -33,11 +33,11 @@ public class HeightMapTerrain : MonoBehaviour
         
         offsetX = Random.Range(0f, 9999f);
         offsetY = Random.Range(0f, 9999f);
-        terrainHeightMap1 = GenerateTexture(terrainScale1, offsetX, offsetY);
+        terrainHeightMap1 = PerlinNoise.GenerateTexture(terrainScale1, offsetX, offsetY, width, height);
 
         offsetX = Random.Range(0f, 9999f);
         offsetY = Random.Range(0f, 9999f);
-        terrainHeightMap2 = GenerateTexture(terrainScale2, offsetX, offsetY);
+        terrainHeightMap2 = PerlinNoise.GenerateTexture(terrainScale2, offsetX, offsetY, width, height);
 
 
         ApplyToTerrain(terrainHeightMap1, terrainHeightMap2);
@@ -48,14 +48,13 @@ public class HeightMapTerrain : MonoBehaviour
     {
         Terrain terrain = GetComponent<Terrain>();
         TerrainData terrainData = terrain.terrainData;
+
+        // break cases
         if (terrain == null) { Debug.LogError("Terrain component not loaded"); return; }
-        
-        if(givenHeightMap1 == null) Debug.Log("Height map 1 not loaded");
+        if (givenHeightMap1 == null) Debug.Log("Height map 1 not loaded");
         if(givenHeightMap2 == null) Debug.Log("Height map 2 not loaded");
         if (givenHeightMap1 == null || givenHeightMap2 == null) return;
         
-        //int width = givenHeightMap1.width;
-        //int height = givenHeightMap1.height;
 
         float[,] heights = new float[height, width];
 
@@ -74,32 +73,4 @@ public class HeightMapTerrain : MonoBehaviour
         terrainData.SetHeights(0, 0, heights);
     }
 
-
-    // Perlin noise height map generation functions
-
-    Texture2D GenerateTexture(float scale, float offsetX, float offsetY)
-    {
-        Texture2D texture = new Texture2D(width, height);
-
-        for(int x=0; x<width; x++)
-        {
-            for(int y=0; y<height; y++)
-            {
-                Color color = CalculateColor(x,y, scale, offsetX, offsetY);
-                texture.SetPixel(x,y,color);
-            }
-        }
-
-        texture.Apply();
-        return texture;
-    }
-
-    Color CalculateColor(int x, int y, float scale, float offsetX, float offsetY)
-    {
-        float xCoord = (float)x/width * scale + offsetX;
-        float yCoord = (float)y/height * scale + offsetY;
-
-        float sample = Mathf.PerlinNoise(xCoord,yCoord);
-        return new Color(sample, sample, sample);
-    }
 }

@@ -46,11 +46,28 @@ public class TerrainFillingGPU : MonoBehaviour
         int width = zInstances;
         float offsetX = Random.Range(0f, 9999f);
         float offsetY = Random.Range(0f, 9999f);
-        grassHeightMap = GenerateTexture(grassScale, offsetX, offsetY, width, height);
+        grassHeightMap = PerlinNoise.GenerateTexture(grassScale, offsetX, offsetY, width, height);
 
         // upewnij się, że materiał ma włączone "Enable GPU Instancing"
         //GenerateGrass();
     }
+
+    void Update()
+    {
+        if (grassMesh == null || grassMaterial == null || matrices.Count == 0) return;
+
+        // unikamy alokowania nowych list w pętli — kopiujemy do tymczasowej tablicy
+        for (int i = 0; i < matrices.Count; i += BATCH_SIZE)
+        {
+            int count = Mathf.Min(BATCH_SIZE, matrices.Count - i);
+            Matrix4x4[] batch = new Matrix4x4[count];
+            matrices.CopyTo(i, batch, 0, count);
+
+            // Możesz przekazać też MaterialPropertyBlock jeśli używasz instanced props
+            Graphics.DrawMeshInstanced(grassMesh, 0, grassMaterial, batch, count);
+        }
+    }
+
 
     [ContextMenu("Generate Grass")]
     public void GenerateGrass()
@@ -91,55 +108,11 @@ public class TerrainFillingGPU : MonoBehaviour
         Debug.Log("Instances to render: " + matrices.Count);
     }
 
-    void Update()
-    {
-        if (grassMesh == null || grassMaterial == null || matrices.Count == 0) return;
-
-        // unikamy alokowania nowych list w pętli — kopiujemy do tymczasowej tablicy
-        for (int i = 0; i < matrices.Count; i += BATCH_SIZE)
-        {
-            int count = Mathf.Min(BATCH_SIZE, matrices.Count - i);
-            Matrix4x4[] batch = new Matrix4x4[count];
-            matrices.CopyTo(i, batch, 0, count);
-
-            // Możesz przekazać też MaterialPropertyBlock jeśli używasz instanced props
-            Graphics.DrawMeshInstanced(grassMesh, 0, grassMaterial, batch, count);
-        }
-    }
 
     [ContextMenu("Clear Grass")]
     public void ClearGrass()
     {
         matrices.Clear();
     }
-
-    // Perlin noise
-
-    Texture2D GenerateTexture(float scale, float offsetX, float offsetY, int width, int height)
-    {
-        Texture2D texture = new Texture2D(width, height);
-
-        for(int x=0; x<width; x++)
-        {
-            for(int y=0; y<height; y++)
-            {
-                Color color = CalculateColor(x,y, scale, offsetX, offsetY, width, height);
-                texture.SetPixel(x,y,color);
-            }
-        }
-
-        texture.Apply();
-        return texture;
-    }
-
-    Color CalculateColor(int x, int y, float scale, float offsetX, float offsetY, int width, int height)
-    {
-        float xCoord = (float)x/width * scale + offsetX;
-        float yCoord = (float)y/height * scale + offsetY;
-
-        float sample = Mathf.PerlinNoise(xCoord,yCoord);
-        return new Color(sample, sample, sample);
-    }
-
 
 }
