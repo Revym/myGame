@@ -388,13 +388,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4debcd6f4d09984f8b23073972f8d34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  heightMap: {fileID: 0}
-  heightMultiplier: 12
+  heightMultiplier: 50
   height: 257
   width: 257
-  scale: 7
+  terrainScale1: 7
+  terrainScale2: 2
   offsetX: 100
   offsetY: 100
+  weight1: 0.143
+  weight2: 0.7
 --- !u!114 &1034462037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -429,13 +431,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   xStart: 0
   zStart: 0
-  xMax: 128
-  zMax: 128
-  xInstances: 160
-  zInstances: 160
+  xMax: 256
+  zMax: 256
+  xInstances: 320
+  zInstances: 320
   minGrassSize: 1.2
   maxGrassSize: 1.5
-  grassPrefab: {fileID: 0}
+  grassScale: 7
+  grassSideOffset: 0.75
 --- !u!1 &1206601639
 GameObject:
   m_ObjectHideFlags: 0
@@ -676,7 +679,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 62.78, y: 5.02, z: 68.24}
-  m_LocalScale: {x: 1, y: 20, z: 1}
+  m_LocalScale: {x: 1, y: 40, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1105,7 +1108,7 @@ Transform:
   m_GameObject: {fileID: 1936921747}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 51.5, y: 14.38, z: 50.71}
+  m_LocalPosition: {x: 51.5, y: 26.06, z: 50.71}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
