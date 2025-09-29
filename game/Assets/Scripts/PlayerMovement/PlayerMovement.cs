@@ -87,12 +87,35 @@ public class PlayerMovement : MonoBehaviour
         Vector3 move = currentVelocity; //+lastGroundedDirection
         move.y = verticalVelocity;
 
-        cc.Move(move * Time.deltaTime);
+        CollisionFlags flags = cc.Move(move * Time.deltaTime);
+            
 
+        /*
+        if ((flags & CollisionFlags.Above) != 0)
+        {
+            verticalVelocity = 0f; // albo: verticalVelocity = -0.1f;
+        }
+
+        if (cc.isGrounded && verticalVelocity < 0f)
+        {
+            verticalVelocity = -1f;
+        }
+
+        //cc.Move(move * Time.deltaTime);
+        */
+
+        if ((flags & CollisionFlags.Above) != 0)
+        {
+            cc.Move(Vector3.down * 0.1f);
+            
+            //Debug.Log($"HitAbove - pre: verticalVelocity={verticalVelocity}, move={move}, pos={transform.position}");
+            verticalVelocity = -0.1f;
+            Debug.Log($"HitAbove - post: verticalVelocity={verticalVelocity}");
+        }
+
+        if (cc.isGrounded && verticalVelocity < 0f)
+        {
+            verticalVelocity = -1f;
+        }
     }
 }
-/* devLog com
-
-ruch CHYBA na razie git
-
-*/
