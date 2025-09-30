@@ -85,19 +85,4 @@ public class NewSimpleHitscanBeam : MonoBehaviour
             }
         }
     }
-    /*
-    private IEnumerator ShowBeam(Vector3 start, Vector3 end)
-    {
-        lineRenderer.SetPosition(0, start);
-        lineRenderer.SetPosition(1, end);
-        lineRenderer.enabled = true;
-
-        yield return new WaitForSeconds(beamDuration);
-
-        lineRenderer.enabled = false;
-    }
-    */
 }
-/*  devLog com
-
-*/

@@ -19,6 +19,7 @@ public class TerrainFillingGPU : MonoBehaviour
     public float grassScale = 7f;
     [Range(0f, 1f)]
     public float grassSideOffset = 0.5f;
+    public float lowerGrassMult = 1.5f;
 
     private GameObject grassPrefab;
     private Mesh grassMesh;
@@ -87,7 +88,8 @@ public class TerrainFillingGPU : MonoBehaviour
                 if (hit.collider.GetComponent<Terrain>() == null) continue;
 
                 // value for lower based on designated height map
-                float lower = grassHeightMap.GetPixel((int)x, (int)z).grayscale;
+                float lower = grassHeightMap.GetPixel((int)x, (int)z).grayscale * lowerGrassMult;
+                if (lower >= 1) continue; // means: dont instantiate grass if too low
 
                 // side-to-side random offset
                 float offset = Random.Range(-grassSideOffset, grassSideOffset);
