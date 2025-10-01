@@ -44,7 +44,7 @@ public class AnimationManager : MonoBehaviour
             {
                 animator.SetFloat("Speed", walkingForward);
             }
-            
+
         }
         else if (keyboard.sKey.isPressed)
         {
@@ -64,16 +64,24 @@ public class AnimationManager : MonoBehaviour
             animator.SetFloat("Shooting", idle);
         }
 
-
-        // test pose for blender and shit
-        if (keyboard.qKey.isPressed)
+        if (keyboard.dKey.isPressed)
         {
-            animator.SetBool("testBool", true);
+            animator.SetBool("walkingRight", true);
         }
         else
         {
-            animator.SetBool("testBool", false);
+            animator.SetBool("walkingRight", false);
         }
+
+        if (keyboard.aKey.isPressed)
+        {
+            animator.SetBool("walkingLeft", true);
+        }
+        else
+        {
+            animator.SetBool("walkingLeft", false);
+        }
+        
     }
 
 
