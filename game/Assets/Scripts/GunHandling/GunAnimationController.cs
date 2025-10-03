@@ -23,7 +23,6 @@ public class GunAnimationController : MonoBehaviour
 
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
-            Debug.Log("Shot");
             animator.SetBool("Shot", true);
         }
         
