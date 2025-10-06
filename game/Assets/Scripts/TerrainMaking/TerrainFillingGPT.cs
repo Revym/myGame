@@ -14,6 +14,7 @@ public class TerrainFillingGPU : MonoBehaviour
     public int zInstances = 256;
 
     [Header("Grass settings")]
+    public string grassPrefabName = "grass1";
     public float minGrassSize = 1.2f;
     public float maxGrassSize = 1.5f;
     public float grassScale = 7f;
@@ -33,7 +34,7 @@ public class TerrainFillingGPU : MonoBehaviour
 
     void Start()
     {
-        grassPrefab = Resources.Load<GameObject>("Models/grass/grass1");
+        grassPrefab = Resources.Load<GameObject>($"Models/grass/{grassPrefabName}");
         if (grassPrefab == null) { Debug.LogError("Nie znaleziono prefaba!"); return; }
 
         MeshFilter mf = grassPrefab.GetComponent<MeshFilter>();

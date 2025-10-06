@@ -1162,6 +1162,7 @@ MonoBehaviour:
   zMax: 256
   xInstances: 320
   zInstances: 320
+  grassPrefabName: grass3p
   minGrassSize: 1.2
   maxGrassSize: 1.5
   grassScale: 7
