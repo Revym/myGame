@@ -18,7 +18,7 @@ public class TerrainFillingGPU : MonoBehaviour
     public float minGrassSize = 1.2f;
     public float maxGrassSize = 1.5f;
     public float grassScale = 7f;
-    [Range(0f, 1f)]
+    [Range(0f, 4f)]
     public float grassSideOffset = 0.5f;
     public float lowerGrassMult = 1.5f;
 
@@ -35,6 +35,7 @@ public class TerrainFillingGPU : MonoBehaviour
     void Start()
     {
         grassPrefab = Resources.Load<GameObject>($"Models/grass/{grassPrefabName}");
+        grassPrefab = Resources.Load<GameObject>("Models/grass/grass1");
         if (grassPrefab == null) { Debug.LogError("Nie znaleziono prefaba!"); return; }
 
         MeshFilter mf = grassPrefab.GetComponent<MeshFilter>();
@@ -83,7 +84,11 @@ public class TerrainFillingGPU : MonoBehaviour
         {
             for (float z = zStart; z <= zMax; z += zStep)
             {
-                Vector3 rayStart = new Vector3(x, spawnHeight, z);
+                // side-to-side random offset
+                float offsetX = Random.Range(-grassSideOffset, grassSideOffset);
+                float offsetZ = Random.Range(-grassSideOffset, grassSideOffset);
+
+                Vector3 rayStart = new Vector3(x + offsetX, spawnHeight, z + offsetZ);
 
                 if (!Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, Mathf.Infinity)) continue;
                 if (hit.collider.GetComponent<Terrain>() == null) continue;
@@ -92,9 +97,8 @@ public class TerrainFillingGPU : MonoBehaviour
                 float lower = grassHeightMap.GetPixel((int)x, (int)z).grayscale * lowerGrassMult;
                 if (lower >= 1) continue; // means: dont instantiate grass if too low
 
-                // side-to-side random offset
-                float offset = Random.Range(-grassSideOffset, grassSideOffset);
-                Vector3 pos = new Vector3(x + offset, hit.point.y - lower, z + offset);
+                
+                Vector3 pos = new Vector3(x + offsetX, hit.point.y - lower, z + offsetZ);
 
 
                 // losowy obrót wokół Y i losowa skala (dla naturalności)
