@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-
 // GPU instancing (to learn)
 
 public class TerrainFillingGPU : MonoBehaviour
@@ -14,38 +13,29 @@ public class TerrainFillingGPU : MonoBehaviour
     public int zInstances = 256;
 
     [Header("Grass settings")]
-    public string grassPrefabName = "grass1";
     public float minGrassSize = 1.2f;
     public float maxGrassSize = 1.5f;
     public float grassScale = 7f;
     [Range(0f, 4f)]
     public float grassSideOffset = 0.5f;
     public float lowerGrassMult = 1.5f;
-
-    private GameObject grassPrefab;
-    private Mesh grassMesh;
-    private Material grassMaterial;
-
-    private List<Matrix4x4> matrices = new List<Matrix4x4>();
     private const int BATCH_SIZE = 1023;
 
     private int spawnHeight = 50;
     private Texture2D grassHeightMap;
 
-    //private string prefabs = ["grass1", "grass3"];
+    public List<string> grassPrefabPaths = new List<string>
+    {
+        "grass1",
+        "grass3"
+    };
+    private List<GrassType> grassTypes = new List<GrassType>();
+    private Dictionary<GrassType, List<Matrix4x4>> matricesByType = new Dictionary<GrassType, List<Matrix4x4>>();
+
 
     void Start()
     {
-        grassPrefab = Resources.Load<GameObject>("Models/grass/" + grassPrefabName);
-        if (grassPrefab == null) { Debug.LogError("Nie znaleziono prefaba!"); return; }
-
-        MeshFilter mf = grassPrefab.GetComponent<MeshFilter>();
-        MeshRenderer mr = grassPrefab.GetComponent<MeshRenderer>();
-        if (mf == null || mr == null) { Debug.LogError("Prefab musi mieć MeshFilter i MeshRenderer!"); return; }
-
-        grassMesh = mf.sharedMesh;
-        grassMaterial = mr.sharedMaterial;
-
+        LoadGrassTypes();
 
         float offsetX = Random.Range(0f, 9999f);
         float offsetY = Random.Range(0f, 9999f);
@@ -53,12 +43,12 @@ public class TerrainFillingGPU : MonoBehaviour
         int width = zInstances;
         grassHeightMap = PerlinNoise.GenerateTexture(grassScale, offsetX, offsetY, width, height);
 
-        // upewnij się, że materiał ma włączone "Enable GPU Instancing"
-        wait(2f);
+        wait(1f);
         GenerateGrass();
+        
     }
 
-    void wait(float time)
+    private void wait(float time)
     {
         time -= Time.deltaTime;
         if (time <= 0f)
@@ -69,17 +59,22 @@ public class TerrainFillingGPU : MonoBehaviour
 
     void Update()
     {
-        if (grassMesh == null || grassMaterial == null || matrices.Count == 0) return;
+        if (matricesByType.Count == 0) return;
 
-        // unikamy alokowania nowych list w pętli — kopiujemy do tymczasowej tablicy
-        for (int i = 0; i < matrices.Count; i += BATCH_SIZE)
+        foreach (var kvp in matricesByType)
         {
-            int count = Mathf.Min(BATCH_SIZE, matrices.Count - i);
-            Matrix4x4[] batch = new Matrix4x4[count];
-            matrices.CopyTo(i, batch, 0, count);
+            GrassType type = kvp.Key;
+            List<Matrix4x4> matrices = kvp.Value;
+            if (matrices.Count == 0) continue;
 
-            // Możesz przekazać też MaterialPropertyBlock jeśli używasz instanced props
-            Graphics.DrawMeshInstanced(grassMesh, 0, grassMaterial, batch, count);
+            for (int i = 0; i < matrices.Count; i += BATCH_SIZE)
+            {
+                int count = Mathf.Min(BATCH_SIZE, matrices.Count - i);
+                Matrix4x4[] batch = new Matrix4x4[count];
+                matrices.CopyTo(i, batch, 0, count);
+
+                Graphics.DrawMeshInstanced(type.mesh, 0, type.material, batch, count);
+            }
         }
     }
 
@@ -88,11 +83,8 @@ public class TerrainFillingGPU : MonoBehaviour
     public void GenerateGrass()
     {
         if (grassHeightMap == null) Debug.Log("grassHeightMap == null");
-        if (grassPrefab == null) Debug.Log("grassPrefab == null");
-        if (grassMesh == null) Debug.Log("grassMesh == null");
-        if (grassMaterial == null) Debug.Log("grassMaterial == null");
-
-        matrices.Clear();
+        
+        matricesByType.Clear();
 
         float xStep = (float)(xMax - xStart) / xInstances;
         float zStep = (float)(zMax - zStart) / zInstances;
@@ -105,6 +97,7 @@ public class TerrainFillingGPU : MonoBehaviour
                 float offsetX = Random.Range(-grassSideOffset, grassSideOffset);
                 float offsetZ = Random.Range(-grassSideOffset, grassSideOffset);
 
+                // setting the start point of a raycast for grass instantiating
                 Vector3 rayStart = new Vector3(x + offsetX, spawnHeight, z + offsetZ);
 
                 if (!Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, Mathf.Infinity)) continue;
@@ -114,27 +107,65 @@ public class TerrainFillingGPU : MonoBehaviour
                 float lower = grassHeightMap.GetPixel((int)x, (int)z).grayscale * lowerGrassMult;
                 if (lower >= 1) continue; // means: dont instantiate grass if too low
 
-
+                // instatiating position
                 Vector3 pos = new Vector3(x + offsetX, hit.point.y - lower, z + offsetZ);
-
 
                 // losowy obrót wokół Y i losowa skala (dla naturalności)
                 Quaternion rot = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
                 float s = Random.Range(minGrassSize, maxGrassSize);
                 Vector3 scale = Vector3.one * s;
 
-                matrices.Add(Matrix4x4.TRS(pos, rot, scale));
+                // choosing a random grass type {To-do}
+                GrassType type = grassTypes[Random.Range(0, grassTypes.Count)];
+
+                //matrices.Add(Matrix4x4.TRS(pos, rot, scale));
+                if (!matricesByType.ContainsKey(type))
+                    matricesByType[type] = new List<Matrix4x4>();
+
+                matricesByType[type].Add(Matrix4x4.TRS(pos, rot, scale));
             }
         }
 
-        Debug.Log("Instances to render: " + matrices.Count);
+        //int totalInstances = 0;
+        //foreach (var list in matricesByType.Values) totalInstances += list.Count;
+        //Debug.Log("Instances to render: " + totalInstances);
     }
 
 
     [ContextMenu("Clear Grass")]
     public void ClearGrass()
     {
-        matrices.Clear();
+        matricesByType.Clear();
     }
 
+    private void LoadGrassTypes()
+    {
+        grassTypes.Clear();
+
+        foreach (var prefabName in grassPrefabPaths)
+        {
+            // loading model prefab from name
+            var prefab = Resources.Load<GameObject>("Models/grass/" + prefabName);
+            if (prefab == null) { Debug.Log("Didnt find prefab "+prefabName); continue; }
+
+            // loading model meshfilter from prefab
+            var mf = prefab.GetComponent<MeshFilter>();
+            if (mf == null) { Debug.Log("Couldnt load MeshFilter for "+prefabName); continue; }
+
+            // loading model meshrenderer from prefab
+            var mr = prefab.GetComponent<MeshRenderer>();
+            if (mr == null) { Debug.Log("Couldnt load MeshRenderer for "+prefabName); continue; }
+
+            // adding the GrassType variable to our grassTypes list
+            grassTypes.Add(new GrassType
+            {
+                resourceName = prefabName,
+                prefab = prefab,
+                mesh = mf.sharedMesh,
+                material = mr.sharedMaterial
+            });
+        }
+
+        //Debug.Log($"Załadowano {grassTypes.Count} typów trawy");
+    }
 }

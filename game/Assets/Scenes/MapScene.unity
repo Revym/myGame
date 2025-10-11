@@ -1118,7 +1118,7 @@ MonoBehaviour:
   heightMultiplier: 50
   height: 257
   width: 257
-  terrainScale1: 7
+  terrainScale1: 5
   terrainScale2: 2
   offsetX: 100
   offsetY: 100
@@ -1160,14 +1160,16 @@ MonoBehaviour:
   zStart: 0
   xMax: 256
   zMax: 256
-  xInstances: 200
-  zInstances: 200
-  grassPrefabName: grass3
+  xInstances: 100
+  zInstances: 100
   minGrassSize: 1.2
   maxGrassSize: 1.5
   grassScale: 7
-  grassSideOffset: 0.75
+  grassSideOffset: 4
   lowerGrassMult: 1.5
+  grassPrefabPaths:
+  - grass1
+  - grass3
 --- !u!114 &1034462039
 MonoBehaviour:
   m_ObjectHideFlags: 0
