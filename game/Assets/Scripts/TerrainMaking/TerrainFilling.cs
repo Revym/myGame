@@ -21,7 +21,7 @@ public class TerrainFilling : MonoBehaviour
 
     void Start()
     {
-        grassPrefab = Resources.Load<GameObject>("Models/grass/grass1");
+        grassPrefab = Resources.Load<GameObject>("Models/grass/grass3p");
         //ClearGrass();
         //GenerateGrass();
     }

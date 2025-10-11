@@ -32,10 +32,11 @@ public class TerrainFillingGPU : MonoBehaviour
     private int spawnHeight = 50;
     private Texture2D grassHeightMap;
 
+    //private string prefabs = ["grass1", "grass3"];
+
     void Start()
     {
-        grassPrefab = Resources.Load<GameObject>($"Models/grass/{grassPrefabName}");
-        grassPrefab = Resources.Load<GameObject>("Models/grass/grass1");
+        grassPrefab = Resources.Load<GameObject>("Models/grass/" + grassPrefabName);
         if (grassPrefab == null) { Debug.LogError("Nie znaleziono prefaba!"); return; }
 
         MeshFilter mf = grassPrefab.GetComponent<MeshFilter>();
@@ -45,14 +46,25 @@ public class TerrainFillingGPU : MonoBehaviour
         grassMesh = mf.sharedMesh;
         grassMaterial = mr.sharedMaterial;
 
-        int height = xInstances;
-        int width = zInstances;
+
         float offsetX = Random.Range(0f, 9999f);
         float offsetY = Random.Range(0f, 9999f);
+        int height = xInstances;
+        int width = zInstances;
         grassHeightMap = PerlinNoise.GenerateTexture(grassScale, offsetX, offsetY, width, height);
 
         // upewnij się, że materiał ma włączone "Enable GPU Instancing"
-        //GenerateGrass();
+        wait(2f);
+        GenerateGrass();
+    }
+
+    void wait(float time)
+    {
+        time -= Time.deltaTime;
+        if (time <= 0f)
+        {
+            return;
+        }
     }
 
     void Update()
@@ -75,6 +87,11 @@ public class TerrainFillingGPU : MonoBehaviour
     [ContextMenu("Generate Grass")]
     public void GenerateGrass()
     {
+        if (grassHeightMap == null) Debug.Log("grassHeightMap == null");
+        if (grassPrefab == null) Debug.Log("grassPrefab == null");
+        if (grassMesh == null) Debug.Log("grassMesh == null");
+        if (grassMaterial == null) Debug.Log("grassMaterial == null");
+
         matrices.Clear();
 
         float xStep = (float)(xMax - xStart) / xInstances;
@@ -97,7 +114,7 @@ public class TerrainFillingGPU : MonoBehaviour
                 float lower = grassHeightMap.GetPixel((int)x, (int)z).grayscale * lowerGrassMult;
                 if (lower >= 1) continue; // means: dont instantiate grass if too low
 
-                
+
                 Vector3 pos = new Vector3(x + offsetX, hit.point.y - lower, z + offsetZ);
 
 
