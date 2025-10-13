@@ -8,7 +8,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: grass1
-    second: {fileID: 2100000, guid: 6b4f6735c586c334fade7cf94650941d, type: 2}
+    second: {fileID: 2100000, guid: 6545cc96b0710914c831902c743f8579, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
