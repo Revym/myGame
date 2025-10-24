@@ -58,10 +58,10 @@ public class DoorInteraction : MonoBehaviour
             Debug.LogError("Nie wykryto klawiatury przez Input System!");
 
         // connecting the text prefab from files
-        interactionPrefab = Resources.Load<GameObject>("TextPrefabs/InteractionTextPrefab");
+        interactionPrefab = Resources.Load<GameObject>("Prefabs/TextPrefabs/InteractionTextPrefab");
 
         // connecting to player
-        player = GameObject.Find("Camera").transform;
+        player = GameObject.Find("PlayerCamera").transform;
 
         // setting the start rotation
         closedRotation = transform.rotation;

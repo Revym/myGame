@@ -43,7 +43,7 @@ public class TerrainFillingGPU : MonoBehaviour
         int width = zInstances;
         grassHeightMap = PerlinNoise.GenerateTexture(grassScale, offsetX, offsetY, width, height);
 
-        wait(1f);
+        wait(0.5f);
         GenerateGrass();
         
     }

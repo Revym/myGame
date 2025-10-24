@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CameraMovement : MonoBehaviour
 {
@@ -14,7 +15,13 @@ public class CameraMovement : MonoBehaviour
     [Range(0f, 2f)]
     [SerializeField] private float headRotationFactor = 0.5f;
 
-    private bool error = false;
+    [Header("Czułość myszy")]
+    public float mouseSensitivityY = 90f;
+
+    private float xRotation = 0f;
+    private Mouse mouse;
+    private bool error=false;
+
 
     void Start()
     {
@@ -29,6 +36,11 @@ public class CameraMovement : MonoBehaviour
             error = true;
             Debug.Log("Error, 1 or 2 camera points = NULL");
         }
+
+        // podłączenie myszki
+        mouse = Mouse.current;
+        if (mouse == null) Debug.LogError("Brak myszy!");
+        Cursor.lockState = CursorLockMode.Locked;
 
     }
 
@@ -45,9 +57,6 @@ public class CameraMovement : MonoBehaviour
 
         // applying the vector to the camera
         Vector3 targetPosition = fixedCameraPoint.position + diffVec * headMoveFactor;
-        //Debug.Log("vector: " + diffVec);
-        //Debug.Log("target pos: " + targetPosition);
-        //Debug.Log("");
         transform.position = targetPosition;
 
         // Różnica rotacji: "jak obrócić Fixed, by osiągnąć Moving"
@@ -56,8 +65,12 @@ public class CameraMovement : MonoBehaviour
         // Teraz chcemy tylko część tej rotacji (np. 0.5 = połowa obrotu)
         Quaternion partialRot = Quaternion.Slerp(Quaternion.identity, deltaRot, headRotationFactor);
 
+        // zczytanie dodatkowo myszki
+        mouseInput();
+        Quaternion mouseRot = Quaternion.Euler(xRotation, 0f, 0f);
+
         // Finalna rotacja kamery = Fixed * partial
-        transform.rotation = fixedCameraPoint.rotation * partialRot;
+        transform.rotation = fixedCameraPoint.rotation * partialRot * mouseRot ;
     }
 
     private Transform FindDeepChild(Transform parent, string name)
@@ -73,4 +86,20 @@ public class CameraMovement : MonoBehaviour
         }
         return null;
     }
+
+    private void mouseInput()
+    {
+        // Zwolnienie kursora
+        if (Keyboard.current.escapeKey.wasPressedThisFrame)
+            Cursor.lockState = CursorLockMode.None;
+
+        // Pobierz ruch myszy
+        Vector2 delta = mouse.delta.ReadValue() * Time.deltaTime;
+        float mouseY = delta.y * mouseSensitivityY;
+
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+        //transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+    }
 }
+
