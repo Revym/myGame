@@ -84,7 +84,9 @@ public class DoorInteraction : MonoBehaviour
                 spawnedText = Instantiate(interactionPrefab, transform);
                 int s1 = isInFront ? 1 : -1; // based on front/back to the door
                 int s2 = textSide ? 1 : -1; // based on different pivot point
-                spawnedText.transform.localPosition = new Vector3(s1*0.35f, 1.5f, s2*0.8f);
+                spawnedText.transform.localPosition = new Vector3(s1 * 0.35f, 1.5f, s2 * 0.8f);
+                spawnedText.transform.LookAt(player);
+                spawnedText.transform.rotation = Quaternion.Euler(0f, spawnedText.transform.rotation.eulerAngles.y + 180f, 0f);
             }
         }
     }
