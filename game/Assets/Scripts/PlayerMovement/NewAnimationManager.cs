@@ -57,7 +57,6 @@ public class NewAnimationManager : MonoBehaviour
 
         if (mouse.rightButton.isPressed)
         {
-            Debug.Log("Aiming");
             animator.SetBool("Aiming", true);
         }
         else

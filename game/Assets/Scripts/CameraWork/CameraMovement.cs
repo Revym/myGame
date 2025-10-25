@@ -20,7 +20,9 @@ public class CameraMovement : MonoBehaviour
 
     private float xRotation = 0f;
     private Mouse mouse;
-    private bool error=false;
+    private bool error = false;
+    
+    public ExitMenu exitMenu;
 
 
     void Start()
@@ -89,6 +91,8 @@ public class CameraMovement : MonoBehaviour
 
     private void mouseInput()
     {
+        if (ExitMenu.Instance != null && ExitMenu.Instance.inputBlocked) return;
+        
         // Zwolnienie kursora
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
             Cursor.lockState = CursorLockMode.None;
