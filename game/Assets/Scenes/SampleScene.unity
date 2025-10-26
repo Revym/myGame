@@ -467,6 +467,7 @@ MonoBehaviour:
   headMoveFactor: 1
   headRotationFactor: 0.25
   mouseSensitivityY: 90
+  exitMenu: {fileID: 0}
 --- !u!1 &12262738
 GameObject:
   m_ObjectHideFlags: 0
@@ -6523,6 +6524,7 @@ MonoBehaviour:
   headMoveFactor: 1
   headRotationFactor: 0.25
   mouseSensitivityY: 90
+  exitMenu: {fileID: 0}
 --- !u!114 &1236168170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8240,7 +8242,7 @@ MonoBehaviour:
   hipPosition: {x: 0.17, y: -0.19, z: 0.14}
   adsPosition: {x: 0, y: -0.055, z: 0.28}
   crosshairName: SimpleCrosshair
-  forceADS: 1
+  forceADS: 0
   transitionSpeed: 10
 --- !u!1001 &1684770399
 PrefabInstance:
