@@ -296,7 +296,7 @@ Terrain:
   m_StaticShadowCaster: 0
   m_IgnoreQualitySettings: 0
   m_ReflectionProbeUsage: 1
-  m_MaterialTemplate: {fileID: 2100000, guid: 50b5f9f36333d0446bbfd59b4ea18a4d, type: 2}
+  m_MaterialTemplate: {fileID: 2100000, guid: 35fe574f9a7c3fe40bb2473081e56e95, type: 2}
   m_BakeLightProbesForTrees: 1
   m_PreserveTreePrototypeLayers: 0
   m_DeringLightProbesForTrees: 1
@@ -402,7 +402,7 @@ Terrain:
   m_StaticShadowCaster: 0
   m_IgnoreQualitySettings: 0
   m_ReflectionProbeUsage: 1
-  m_MaterialTemplate: {fileID: 2100000, guid: 50b5f9f36333d0446bbfd59b4ea18a4d, type: 2}
+  m_MaterialTemplate: {fileID: 2100000, guid: 35fe574f9a7c3fe40bb2473081e56e95, type: 2}
   m_BakeLightProbesForTrees: 1
   m_PreserveTreePrototypeLayers: 0
   m_DeringLightProbesForTrees: 1
@@ -699,6 +699,7 @@ GameObject:
   - component: {fileID: 847313140}
   - component: {fileID: 847313141}
   - component: {fileID: 847313142}
+  - component: {fileID: 847313143}
   m_Layer: 0
   m_Name: GameManagerObject
   m_TagString: Untagged
@@ -771,6 +772,35 @@ MonoBehaviour:
   grassScale: 7
   grassSideOffset: 2.96
   lowerGrassMult: 1.5
+  grassPrefabPaths:
+  - grass1
+  - grass3
+--- !u!114 &847313143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 847313139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b25cb7a11fc90f548bc26329f195ace5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  xStart: 0
+  zStart: 0
+  xMax: 512
+  zMax: 512
+  xInstances: 400
+  zInstances: 400
+  minGrassSize: 1.2
+  maxGrassSize: 1.5
+  grassScale: 7
+  grassSideOffset: 2.67
+  lowerGrassMult: 1.5
+  chunkSize: 32
+  playerCamera: {fileID: 1750145350}
+  renderDistance: 250
   grassPrefabPaths:
   - grass1
   - grass3
@@ -912,7 +942,7 @@ Terrain:
   m_StaticShadowCaster: 0
   m_IgnoreQualitySettings: 0
   m_ReflectionProbeUsage: 1
-  m_MaterialTemplate: {fileID: 2100000, guid: 50b5f9f36333d0446bbfd59b4ea18a4d, type: 2}
+  m_MaterialTemplate: {fileID: 2100000, guid: 35fe574f9a7c3fe40bb2473081e56e95, type: 2}
   m_BakeLightProbesForTrees: 1
   m_PreserveTreePrototypeLayers: 0
   m_DeringLightProbesForTrees: 1
@@ -968,7 +998,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1034462031}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7360bc359e7ef954f8401cd0a6f26e1c, type: 3}
   m_Name: 
@@ -2429,7 +2459,7 @@ Terrain:
   m_StaticShadowCaster: 0
   m_IgnoreQualitySettings: 0
   m_ReflectionProbeUsage: 1
-  m_MaterialTemplate: {fileID: 2100000, guid: 50b5f9f36333d0446bbfd59b4ea18a4d, type: 2}
+  m_MaterialTemplate: {fileID: 2100000, guid: 35fe574f9a7c3fe40bb2473081e56e95, type: 2}
   m_BakeLightProbesForTrees: 1
   m_PreserveTreePrototypeLayers: 0
   m_DeringLightProbesForTrees: 1
