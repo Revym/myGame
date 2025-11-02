@@ -28,18 +28,19 @@ public class TerrainMakingManager : MonoBehaviour
     public float weight1 = 0.25f;
     [Range(0f, 1f)]
     public float weight2 = 0.5f;
+
     
-    void Awake()
+    public void GenerateParameters() // generates terrain making parameters for TilingHeightMapTerrain scripts
     {
         Instance = this;
 
-        if (weight1+weight2 > 1)
+        if (weight1 + weight2 > 1)
         {
-            float tooMuch = (weight1+weight2-1) / 2;
-            weight1-=tooMuch;
-            weight2-=tooMuch;
+            float tooMuch = (weight1 + weight2 - 1) / 2;
+            weight1 -= tooMuch;
+            weight2 -= tooMuch;
         }
-        
+
         offsetX = Random.Range(0f, 9999f);
         offsetY = Random.Range(0f, 9999f);
         heightMap1 = PerlinNoise.GenerateTexture(terrainScale1, offsetX, offsetY, totalWidth, totalHeight);

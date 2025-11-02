@@ -25,7 +25,7 @@ public class GrassManager : MonoBehaviour
             matricesByType[type].Add(Matrix4x4.TRS(pos, rot, scale));
 
             // Używamy przekazanej wartości maxScaleValue
-            Vector3 grassTopPoint = pos + rot * (Vector3.up * scale.y * maxScaleValue); 
+            Vector3 grassTopPoint = pos + rot * (Vector3.up * scale.y * maxScaleValue);
 
             if (!boundsInitialized)
             {
@@ -42,7 +42,7 @@ public class GrassManager : MonoBehaviour
     }
     // Koniec definicji klasy GrassChunk
 
-    
+
     [Header("Terrain filling settings")]
     public int xStart = 0;
     public int zStart = 0;
@@ -64,7 +64,7 @@ public class GrassManager : MonoBehaviour
     public int chunkSize = 32;
     // POPRAWKA: Publiczne pole na kamerę gracza.
     // Pamiętaj, aby przeciągnąć obiekt "PlayerCamera" na to pole w inspektorze!
-    public Camera playerCamera; 
+    public Camera playerCamera;
 
     private int spawnHeight = 50;
     private Texture2D grassHeightMap;
@@ -76,26 +76,27 @@ public class GrassManager : MonoBehaviour
         "grass1",
         "grass3"
     };
-    
+
     // ZMIANA: Ta lista będzie teraz używać Twojej zewnętrznej klasy GrassType
     private List<GrassType> grassTypes = new List<GrassType>();
-    
+
     // Ten słownik używa naszej zagnieżdżonej klasy GrassChunk i jest już OK
     private Dictionary<Vector2Int, GrassChunk> chunks = new Dictionary<Vector2Int, GrassChunk>();
-    
+
     private Plane[] frustumPlanes;
 
     void Start()
     {
+        /*
         // ZMIANA: Sprawdzamy publiczne pole 'playerCamera'
         if (playerCamera == null)
         {
             Debug.LogError("Kamera gracza (playerCamera) nie jest ustawiona w inspektorze! Culling nie będzie działać.", this);
             return;
         }
-        
+
         frustumPlanes = new Plane[6];
-        
+
         // Usunięto ustawianie statycznego pola GrassChunk.maxGrassSize
 
         LoadGrassTypes();
@@ -107,9 +108,10 @@ public class GrassManager : MonoBehaviour
         // Zakładam, że masz gdzieś klasę PerlinNoise
         grassHeightMap = PerlinNoise.GenerateTexture(grassScale, offsetX, offsetY, width, height);
 
-        GenerateGrass();
+        //GenerateGrass();
+        */
     }
-    
+
     void Update()
     {
         // ZMIANA: Sprawdzamy 'playerCamera'
@@ -122,9 +124,9 @@ public class GrassManager : MonoBehaviour
         {
             if (!GeometryUtility.TestPlanesAABB(frustumPlanes, chunk.bounds))
             {
-                continue; 
+                continue;
             }
-            
+
             foreach (var kvp in chunk.matricesByType)
             {
                 GrassType type = kvp.Key;
@@ -166,7 +168,7 @@ public class GrassManager : MonoBehaviour
     public void GenerateGrass()
     {
         if (grassHeightMap == null) Debug.Log("grassHeightMap == null. Generowanie przerwane.");
-        
+
         chunks.Clear();
 
         // Upewnij się, że grassTypes są załadowane
@@ -190,7 +192,7 @@ public class GrassManager : MonoBehaviour
 
                 if (!Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, Mathf.Infinity)) continue;
                 if (hit.collider.GetComponent<Terrain>() == null) continue;
-                
+
                 // Poprawka mapowania UV (była w poprzednim kodzie, zostaje)
                 float u_normalized = (x - xStart) / (float)(xMax - xStart);
                 float v_normalized = (z - zStart) / (float)(zMax - zStart);
@@ -198,7 +200,7 @@ public class GrassManager : MonoBehaviour
                 int texZ = Mathf.FloorToInt(v_normalized * grassHeightMap.height);
 
                 float lower = grassHeightMap.GetPixel(texX, texZ).grayscale * lowerGrassMult;
-                if (lower >= 1) continue; 
+                if (lower >= 1) continue;
 
                 Vector3 pos = new Vector3(x + offsetX, hit.point.y - lower, z + offsetZ);
                 Quaternion rot = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
@@ -236,13 +238,13 @@ public class GrassManager : MonoBehaviour
         foreach (var prefabName in grassPrefabPaths)
         {
             var prefab = Resources.Load<GameObject>("Models/grass/" + prefabName);
-            if (prefab == null) { Debug.Log("Didnt find prefab "+prefabName); continue; }
+            if (prefab == null) { Debug.Log("Didnt find prefab " + prefabName); continue; }
 
             var mf = prefab.GetComponent<MeshFilter>();
-            if (mf == null) { Debug.Log("Couldnt load MeshFilter for "+prefabName); continue; }
+            if (mf == null) { Debug.Log("Couldnt load MeshFilter for " + prefabName); continue; }
 
             var mr = prefab.GetComponent<MeshRenderer>();
-            if (mr == null) { Debug.Log("Couldldnt load MeshRenderer for "+prefabName); continue; }
+            if (mr == null) { Debug.Log("Couldldnt load MeshRenderer for " + prefabName); continue; }
 
             if (!mr.sharedMaterial.enableInstancing)
             {
@@ -259,5 +261,28 @@ public class GrassManager : MonoBehaviour
                 material = mr.sharedMaterial
             });
         }
+    }
+
+    public void Load()
+    {
+        // ZMIANA: Sprawdzamy publiczne pole 'playerCamera'
+        if (playerCamera == null)
+        {
+            Debug.LogError("Kamera gracza (playerCamera) nie jest ustawiona w inspektorze! Culling nie będzie działać.", this);
+            return;
+        }
+
+        frustumPlanes = new Plane[6];
+
+        // Usunięto ustawianie statycznego pola GrassChunk.maxGrassSize
+
+        LoadGrassTypes();
+
+        float offsetX = Random.Range(0f, 9999f);
+        float offsetY = Random.Range(0f, 9999f);
+        int height = xInstances;
+        int width = zInstances;
+        // Zakładam, że masz gdzieś klasę PerlinNoise
+        grassHeightMap = PerlinNoise.GenerateTexture(grassScale, offsetX, offsetY, width, height);
     }
 }
