@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-// POPRAWKA: Nazwa klasy zmieniona na GrassManager
 public class GrassManager : MonoBehaviour
 {
     // POPRAWKA BŁĘDÓW 2 i 3:
@@ -40,7 +39,7 @@ public class GrassManager : MonoBehaviour
             }
         }
     }
-    // Koniec definicji klasy GrassChunk
+   
 
 
     [Header("Terrain filling settings")]
@@ -62,8 +61,6 @@ public class GrassManager : MonoBehaviour
 
     [Header("Culling settings")]
     public int chunkSize = 32;
-    // POPRAWKA: Publiczne pole na kamerę gracza.
-    // Pamiętaj, aby przeciągnąć obiekt "PlayerCamera" na to pole w inspektorze!
     public Camera playerCamera;
 
     private int spawnHeight = 50;
@@ -85,39 +82,13 @@ public class GrassManager : MonoBehaviour
 
     private Plane[] frustumPlanes;
 
-    void Start()
-    {
-        /*
-        // ZMIANA: Sprawdzamy publiczne pole 'playerCamera'
-        if (playerCamera == null)
-        {
-            Debug.LogError("Kamera gracza (playerCamera) nie jest ustawiona w inspektorze! Culling nie będzie działać.", this);
-            return;
-        }
-
-        frustumPlanes = new Plane[6];
-
-        // Usunięto ustawianie statycznego pola GrassChunk.maxGrassSize
-
-        LoadGrassTypes();
-
-        float offsetX = Random.Range(0f, 9999f);
-        float offsetY = Random.Range(0f, 9999f);
-        int height = xInstances;
-        int width = zInstances;
-        // Zakładam, że masz gdzieś klasę PerlinNoise
-        grassHeightMap = PerlinNoise.GenerateTexture(grassScale, offsetX, offsetY, width, height);
-
-        //GenerateGrass();
-        */
-    }
 
     void Update()
     {
-        // ZMIANA: Sprawdzamy 'playerCamera'
+        // Sprawdzamy 'playerCamera'
         if (chunks.Count == 0 || playerCamera == null) return;
 
-        // ZMIANA: Używamy 'playerCamera'
+        // Używamy 'playerCamera'
         GeometryUtility.CalculateFrustumPlanes(playerCamera, frustumPlanes);
 
         foreach (GrassChunk chunk in chunks.Values)
@@ -282,7 +253,7 @@ public class GrassManager : MonoBehaviour
         float offsetY = Random.Range(0f, 9999f);
         int height = xInstances;
         int width = zInstances;
-        // Zakładam, że masz gdzieś klasę PerlinNoise
+        // Generates height map by using class PerlinNoise
         grassHeightMap = PerlinNoise.GenerateTexture(grassScale, offsetX, offsetY, width, height);
     }
 }

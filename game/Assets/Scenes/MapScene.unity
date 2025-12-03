@@ -770,8 +770,8 @@ MonoBehaviour:
   minGrassSize: 1.2
   maxGrassSize: 1.5
   grassScale: 7
-  grassSideOffset: 2.67
-  lowerGrassMult: 1.25
+  grassSideOffset: 2.26
+  lowerGrassMult: 0.97
   chunkSize: 32
   playerCamera: {fileID: 1750145350}
   renderDistance: 250
@@ -779,6 +779,7 @@ MonoBehaviour:
   - grass1
   - grass1-2
   - grass3
+  - grass4p
 --- !u!114 &847313144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2084,6 +2085,11 @@ MonoBehaviour:
   movementSpeedGain: 8
   jumpHeight: 1.25
   gravity: 20
+  stickToGroundForce: 5
+  groundCheckDistance: 0.2
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
   exitMenu: {fileID: 0}
   jumpControlMultiplier: 0.8
 --- !u!143 &1851309235
@@ -2545,6 +2551,11 @@ MonoBehaviour:
   movementSpeedGain: 8
   jumpHeight: 1.25
   gravity: 20
+  stickToGroundForce: 5
+  groundCheckDistance: 0.2
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
   exitMenu: {fileID: 0}
   jumpControlMultiplier: 0.8
 --- !u!143 &1936921749
