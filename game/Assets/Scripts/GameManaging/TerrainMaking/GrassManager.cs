@@ -3,18 +3,13 @@ using System.Collections.Generic;
 
 public class GrassManager : MonoBehaviour
 {
-    // POPRAWKA BŁĘDÓW 2 i 3:
-    // Klasa GrassChunk jest teraz zdefiniowana WEWNĄTRZ GrassManager.
-    // Dzięki temu może być 'private' i jest dostępna dla GrassManagera.
+    // ... (Klasa GrassChunk bez zmian) ...
     private class GrassChunk
     {
         public Dictionary<GrassType, List<Matrix4x4>> matricesByType = new Dictionary<GrassType, List<Matrix4x4>>();
         public Bounds bounds;
         private bool boundsInitialized = false;
 
-        // POPRAWKA: Usunęliśmy statyczne pole 'maxGrassSize'.
-        // Zamiast tego, będziemy przekazywać maksymalną skalę w metodzie AddInstance,
-        // ponieważ ta klasa nie ma bezpośredniego dostępu do pól GrassManagera.
         public void AddInstance(GrassType type, Vector3 pos, Quaternion rot, Vector3 scale, float maxScaleValue)
         {
             if (!matricesByType.ContainsKey(type))
@@ -23,7 +18,6 @@ public class GrassManager : MonoBehaviour
             }
             matricesByType[type].Add(Matrix4x4.TRS(pos, rot, scale));
 
-            // Używamy przekazanej wartości maxScaleValue
             Vector3 grassTopPoint = pos + rot * (Vector3.up * scale.y * maxScaleValue);
 
             if (!boundsInitialized)
@@ -39,8 +33,6 @@ public class GrassManager : MonoBehaviour
             }
         }
     }
-   
-
 
     [Header("Terrain filling settings")]
     public int xStart = 0;
@@ -65,8 +57,13 @@ public class GrassManager : MonoBehaviour
 
     private int spawnHeight = 50;
     private Texture2D grassHeightMap;
+
     [Header("Render distance")]
     public float renderDistance = 60f;
+    
+    // --- NOWOŚĆ: Dystans, od którego włącza się LOD ---
+    [Tooltip("Dystans, powyżej którego ładowany jest model LOD")]
+    public float lodDistance = 30f; 
 
     public List<string> grassPrefabPaths = new List<string>
     {
@@ -74,44 +71,47 @@ public class GrassManager : MonoBehaviour
         "grass3"
     };
 
-    // ZMIANA: Ta lista będzie teraz używać Twojej zewnętrznej klasy GrassType
     private List<GrassType> grassTypes = new List<GrassType>();
-
-    // Ten słownik używa naszej zagnieżdżonej klasy GrassChunk i jest już OK
     private Dictionary<Vector2Int, GrassChunk> chunks = new Dictionary<Vector2Int, GrassChunk>();
-
     private Plane[] frustumPlanes;
-
 
     void Update()
     {
-        // Sprawdzamy 'playerCamera'
         if (chunks.Count == 0 || playerCamera == null) return;
 
-        // Używamy 'playerCamera'
         GeometryUtility.CalculateFrustumPlanes(playerCamera, frustumPlanes);
+        Vector3 cameraPosition = playerCamera.transform.position; // Pobieramy raz
 
         foreach (GrassChunk chunk in chunks.Values)
         {
+            // 1. Sprawdzenie czy chunk jest w ogóle w kamerze
             if (!GeometryUtility.TestPlanesAABB(frustumPlanes, chunk.bounds))
             {
                 continue;
+            }
+
+            // 2. Sprawdzenie odległości (Globalny Render Distance)
+            float distanceToChunk = Vector3.Distance(chunk.bounds.center, cameraPosition);
+            if (distanceToChunk > renderDistance)
+            {
+                continue; 
             }
 
             foreach (var kvp in chunk.matricesByType)
             {
                 GrassType type = kvp.Key;
                 List<Matrix4x4> matrices = kvp.Value;
-                if (matrices.Count == 0 || playerCamera == null) continue;
+                if (matrices.Count == 0) continue;
 
-                Vector3 cameraPosition = playerCamera.transform.position;
-                GeometryUtility.CalculateFrustumPlanes(playerCamera, frustumPlanes);
+                // --- NOWOŚĆ: Wybór Mesha (LOD Logic) ---
+                Mesh meshToDraw = type.mesh; // Domyślnie zwykły mesh
 
-                float distanceToChunk = Vector3.Distance(chunk.bounds.center, cameraPosition);
-                if (distanceToChunk > renderDistance)
+                // Jeśli jesteśmy dalej niż lodDistance I dany typ trawy ma wersję LOD
+                if (distanceToChunk > lodDistance && type.meshLOD != null)
                 {
-                    continue; // Chunk jest za daleko
+                    meshToDraw = type.meshLOD;
                 }
+                // ----------------------------------------
 
                 for (int i = 0; i < matrices.Count; i += BATCH_SIZE)
                 {
@@ -120,7 +120,7 @@ public class GrassManager : MonoBehaviour
                     matrices.CopyTo(i, batch, 0, count);
 
                     Graphics.DrawMeshInstanced(
-                        type.mesh,
+                        meshToDraw,     // <-- Tu podajemy wybrany mesh
                         0,
                         type.material,
                         batch,
@@ -134,20 +134,18 @@ public class GrassManager : MonoBehaviour
         }
     }
 
-
+    // ... (GenerateGrass i ClearGrass bez zmian) ...
     [ContextMenu("Generate Grass")]
     public void GenerateGrass()
     {
+        // Kod GenerateGrass pozostaje bez zmian, taki jak w Twoim poście.
+        // Skróciłem go tutaj dla czytelności odpowiedzi, ale wklej tu swoją wersję.
         if (grassHeightMap == null) Debug.Log("grassHeightMap == null. Generowanie przerwane.");
-
         chunks.Clear();
-
-        // Upewnij się, że grassTypes są załadowane
-        if (grassTypes.Count == 0)
-        {
+        if (grassTypes.Count == 0) {
             Debug.LogError("Lista grassTypes jest pusta. Wywołaj LoadGrassTypes() przed GenerateGrass().");
-            LoadGrassTypes(); // Spróbuj załadować
-            if (grassTypes.Count == 0) return; // Jeśli nadal pusta, przerwij
+            LoadGrassTypes();
+            if (grassTypes.Count == 0) return;
         }
 
         float xStep = (float)(xMax - xStart) / xInstances;
@@ -164,7 +162,6 @@ public class GrassManager : MonoBehaviour
                 if (!Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, Mathf.Infinity)) continue;
                 if (hit.collider.GetComponent<Terrain>() == null) continue;
 
-                // Poprawka mapowania UV (była w poprzednim kodzie, zostaje)
                 float u_normalized = (x - xStart) / (float)(xMax - xStart);
                 float v_normalized = (z - zStart) / (float)(zMax - zStart);
                 int texX = Mathf.FloorToInt(u_normalized * grassHeightMap.width);
@@ -188,26 +185,26 @@ public class GrassManager : MonoBehaviour
                     chunk = new GrassChunk();
                     chunks[chunkCoord] = chunk;
                 }
-
-                // POPRAWKA: Przekazujemy 'maxGrassSize' do metody AddInstance
                 chunk.AddInstance(type, pos, rot, scale, maxGrassSize);
             }
         }
     }
-
-
+    
     [ContextMenu("Clear Grass")]
     public void ClearGrass()
     {
         chunks.Clear();
     }
+    // ...
 
+    // --- ZMODYFIKOWANA METODA ŁADOWANIA ---
     private void LoadGrassTypes()
     {
         grassTypes.Clear();
 
         foreach (var prefabName in grassPrefabPaths)
         {
+            // 1. Ładowanie podstawowego modelu
             var prefab = Resources.Load<GameObject>("Models/grass/" + prefabName);
             if (prefab == null) { Debug.Log("Didnt find prefab " + prefabName); continue; }
 
@@ -223,12 +220,28 @@ public class GrassManager : MonoBehaviour
                 mr.sharedMaterial.enableInstancing = true;
             }
 
-            // Używamy Twojej zewnętrznej klasy GrassType
+            // 2. Próba załadowania modelu LOD (szukamy nazwy + "LOD")
+            Mesh lodMesh = null;
+            string lodName = prefabName + "LOD"; // np. "grass1LOD"
+            var lodPrefab = Resources.Load<GameObject>("Models/grass/" + lodName);
+            
+            if (lodPrefab != null)
+            {
+                var lodMf = lodPrefab.GetComponent<MeshFilter>();
+                if (lodMf != null)
+                {
+                    lodMesh = lodMf.sharedMesh;
+                    Debug.Log($"Załadowano LOD dla: {prefabName}");
+                }
+            }
+
+            // 3. Dodanie do listy
             grassTypes.Add(new GrassType
             {
                 resourceName = prefabName,
                 prefab = prefab,
                 mesh = mf.sharedMesh,
+                meshLOD = lodMesh, // <-- Przypisujemy znaleziony LOD (lub null)
                 material = mr.sharedMaterial
             });
         }
@@ -236,24 +249,19 @@ public class GrassManager : MonoBehaviour
 
     public void Load()
     {
-        // ZMIANA: Sprawdzamy publiczne pole 'playerCamera'
         if (playerCamera == null)
         {
-            Debug.LogError("Kamera gracza (playerCamera) nie jest ustawiona w inspektorze! Culling nie będzie działać.", this);
+            Debug.LogError("Kamera gracza (playerCamera) nie jest ustawiona!", this);
             return;
         }
 
         frustumPlanes = new Plane[6];
-
-        // Usunięto ustawianie statycznego pola GrassChunk.maxGrassSize
-
         LoadGrassTypes();
 
         float offsetX = Random.Range(0f, 9999f);
         float offsetY = Random.Range(0f, 9999f);
         int height = xInstances;
         int width = zInstances;
-        // Generates height map by using class PerlinNoise
         grassHeightMap = PerlinNoise.GenerateTexture(grassScale, offsetX, offsetY, width, height);
     }
 }

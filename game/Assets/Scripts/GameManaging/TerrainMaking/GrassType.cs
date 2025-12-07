@@ -6,5 +6,6 @@ public class GrassType
     public string resourceName;   // nazwa modelu
     public GameObject prefab;     // sam prefab
     public Mesh mesh;             // wyciągnięty mesh
+    public Mesh meshLOD;          // prostszy mesh
     public Material material;     // wyciągnięty materiał
 }
