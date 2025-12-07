@@ -57,13 +57,16 @@ public class GrassManager : MonoBehaviour
 
     private int spawnHeight = 50;
     private Texture2D grassHeightMap;
+    private MaterialPropertyBlock propertyBlock;
 
     [Header("Render distance")]
     public float renderDistance = 60f;
     
     // --- NOWOŚĆ: Dystans, od którego włącza się LOD ---
-    [Tooltip("Dystans, powyżej którego ładowany jest model LOD")]
+    [Tooltip("LOD grass model load distance")]
     public float lodDistance = 30f; 
+    [Tooltip("Distance, from end, where fading happens")]
+    public float fadeRange = 10f;
 
     public List<string> grassPrefabPaths = new List<string>
     {
@@ -80,22 +83,30 @@ public class GrassManager : MonoBehaviour
         if (chunks.Count == 0 || playerCamera == null) return;
 
         GeometryUtility.CalculateFrustumPlanes(playerCamera, frustumPlanes);
-        Vector3 cameraPosition = playerCamera.transform.position; // Pobieramy raz
+        Vector3 cameraPosition = playerCamera.transform.position;
 
         foreach (GrassChunk chunk in chunks.Values)
         {
-            // 1. Sprawdzenie czy chunk jest w ogóle w kamerze
-            if (!GeometryUtility.TestPlanesAABB(frustumPlanes, chunk.bounds))
+            if (!GeometryUtility.TestPlanesAABB(frustumPlanes, chunk.bounds)) continue;
+
+            float distanceToChunk = Vector3.Distance(chunk.bounds.center, cameraPosition);
+            if (distanceToChunk > renderDistance) continue;
+
+            // --- 1. OBLICZANIE MNOŻNIKA SKALI ---
+            float scaleMultiplier = 1.0f;
+            float fadeStart = renderDistance - fadeRange;
+
+            if (distanceToChunk > fadeStart)
             {
-                continue;
+                // Obliczamy jak daleko jesteśmy w strefie zanikania (0..1)
+                float t = (distanceToChunk - fadeStart) / fadeRange;
+                // Im dalej, tym mniejsza skala (od 1.0 do 0.0)
+                scaleMultiplier = Mathf.Lerp(1.0f, 0.0f, t);
             }
 
-            // 2. Sprawdzenie odległości (Globalny Render Distance)
-            float distanceToChunk = Vector3.Distance(chunk.bounds.center, cameraPosition);
-            if (distanceToChunk > renderDistance)
-            {
-                continue; 
-            }
+            // Optymalizacja: Jeśli trawa jest mikroskopijna, nie rysuj jej wcale
+            if (scaleMultiplier < 0.05f) continue;
+            // ------------------------------------
 
             foreach (var kvp in chunk.matricesByType)
             {
@@ -103,15 +114,12 @@ public class GrassManager : MonoBehaviour
                 List<Matrix4x4> matrices = kvp.Value;
                 if (matrices.Count == 0) continue;
 
-                // --- NOWOŚĆ: Wybór Mesha (LOD Logic) ---
-                Mesh meshToDraw = type.mesh; // Domyślnie zwykły mesh
-
-                // Jeśli jesteśmy dalej niż lodDistance I dany typ trawy ma wersję LOD
+                // LOD Logic
+                Mesh meshToDraw = type.mesh;
                 if (distanceToChunk > lodDistance && type.meshLOD != null)
                 {
                     meshToDraw = type.meshLOD;
                 }
-                // ----------------------------------------
 
                 for (int i = 0; i < matrices.Count; i += BATCH_SIZE)
                 {
@@ -119,13 +127,36 @@ public class GrassManager : MonoBehaviour
                     Matrix4x4[] batch = new Matrix4x4[count];
                     matrices.CopyTo(i, batch, 0, count);
 
+                    // --- 2. MODYFIKACJA SKALI W BATCHU ---
+                    // Wykonujemy to TYLKO jeśli jesteśmy w strefie zanikania
+                    if (scaleMultiplier < 0.99f)
+                    {
+                        for (int k = 0; k < count; k++)
+                        {
+                            // Pobieramy aktualną macierz
+                            Matrix4x4 mat = batch[k];
+
+                            // Wyciągamy rotację i pozycję (kolumna 3 to pozycja)
+                            Vector3 pos = new Vector3(mat.m03, mat.m13, mat.m23);
+                            Quaternion rot = mat.rotation;
+                            Vector3 scale = mat.lossyScale;
+
+                            // Mnożymy wysokość (Y) przez nasz fade factor
+                            scale.y *= scaleMultiplier;
+
+                            // Nadpisujemy macierz w batchu nową, spłaszczoną wersją
+                            batch[k] = Matrix4x4.TRS(pos, rot, scale);
+                        }
+                    }
+                    // -------------------------------------
+
                     Graphics.DrawMeshInstanced(
-                        meshToDraw,     // <-- Tu podajemy wybrany mesh
+                        meshToDraw,
                         0,
                         type.material,
-                        batch,
+                        batch, 
                         count,
-                        null,
+                        null, 
                         UnityEngine.Rendering.ShadowCastingMode.Off,
                         true
                     );
@@ -238,7 +269,7 @@ public class GrassManager : MonoBehaviour
                 if (lodMf != null)
                 {
                     lodMesh = lodMf.sharedMesh;
-                    Debug.Log($"Załadowano LOD dla: {prefabName}");
+                    //Debug.Log($"Załadowano LOD dla: {prefabName}");
                 }
             }
 
