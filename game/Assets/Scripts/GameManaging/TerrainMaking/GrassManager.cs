@@ -155,10 +155,12 @@ public class GrassManager : MonoBehaviour
         {
             for (float z = zStart; z <= zMax; z += zStep)
             {
+                // setting random offset from grid
                 float offsetX = Random.Range(-grassSideOffset, grassSideOffset);
                 float offsetZ = Random.Range(-grassSideOffset, grassSideOffset);
                 Vector3 rayStart = new Vector3(x + offsetX, spawnHeight, z + offsetZ);
 
+                // checking if on terrain
                 if (!Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, Mathf.Infinity)) continue;
                 if (hit.collider.GetComponent<Terrain>() == null) continue;
 
@@ -170,12 +172,17 @@ public class GrassManager : MonoBehaviour
                 float lower = grassHeightMap.GetPixel(texX, texZ).grayscale * lowerGrassMult;
                 if (lower >= 1) continue;
 
-                Vector3 pos = new Vector3(x + offsetX, hit.point.y - lower, z + offsetZ);
+                // position and rotation
+                Vector3 pos = new Vector3(x + offsetX, hit.point.y, z + offsetZ);
                 Quaternion rot = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
-                float s = Random.Range(minGrassSize, maxGrassSize);
-                Vector3 scale = Vector3.one * s;
+
+                // determinating grass size
+                float baseScale = Random.Range(minGrassSize, maxGrassSize);
+                float heightFactor = Mathf.Clamp01(1.0f - lower);
+                Vector3 scale = new Vector3(baseScale, baseScale * heightFactor, baseScale);
                 GrassType type = grassTypes[Random.Range(0, grassTypes.Count)];
 
+                // adding to proper chunk
                 int chunkX = Mathf.FloorToInt(pos.x / chunkSize);
                 int chunkZ = Mathf.FloorToInt(pos.z / chunkSize);
                 Vector2Int chunkCoord = new Vector2Int(chunkX, chunkZ);
