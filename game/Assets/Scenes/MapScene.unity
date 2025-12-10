@@ -701,6 +701,7 @@ GameObject:
   - component: {fileID: 847313143}
   - component: {fileID: 847313144}
   - component: {fileID: 847313145}
+  - component: {fileID: 847313146}
   m_Layer: 0
   m_Name: GameManagerObject
   m_TagString: Untagged
@@ -784,6 +785,7 @@ MonoBehaviour:
   - grass1-2
   - grass3
   - grass4p
+  debugRenderAll: 0
 --- !u!114 &847313144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -804,7 +806,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 847313139}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6a766ec1948913d43983c027978ea0e8, type: 3}
   m_Name: 
@@ -814,6 +816,29 @@ MonoBehaviour:
   xEnd: 256
   zEnd: 256
   amountOfTrees: 10
+--- !u!114 &847313146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 847313139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66bfee6933ea9d54f9a05e6c341e06ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  treeMesh: {fileID: 0}
+  treeMaterials: []
+  treeDensity: 7
+  noiseScale: 0.05
+  forestThreshold: 0.5
+  mapScale: 2
+  randomOffset: 1.92
+  playerCamera: {fileID: 1750145350}
+  renderDistance: 300
+  chunkSize: 64
+  debugRenderAll: 0
 --- !u!1001 &914873976
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1644,7 +1669,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1704525115
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1828,7 +1853,7 @@ MonoBehaviour:
   rigName: playerCharNoRig
   headMoveFactor: 1
   headRotationFactor: 0.25
-  mouseSensitivityY: 90
+  mouseSensitivityY: 40
   exitMenu: {fileID: 0}
 --- !u!114 &1750145347
 MonoBehaviour:
@@ -2238,7 +2263,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b58c882abe10f94ebc39d5b9a6de177, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseSensitivityX: 90
+  mouseSensitivityX: 40
   exitMenu: {fileID: 0}
 --- !u!114 &1851309234
 MonoBehaviour:

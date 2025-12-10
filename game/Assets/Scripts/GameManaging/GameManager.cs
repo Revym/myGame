@@ -4,12 +4,14 @@ public class GameManager : MonoBehaviour
 {
     private GrassManager grassManager;
     private TerrainMakingManager terrainMakingManager;
+    private TreeManager treeManager;
     [SerializeField] private GameObject terrainParent;
 
     void Start()
     {
         grassManager = GetComponent<GrassManager>();
         terrainMakingManager = GetComponent<TerrainMakingManager>();
+        treeManager = GetComponent<TreeManager>();
 
         // generating terrain making settings
         terrainMakingManager.GenerateParameters();
@@ -21,6 +23,8 @@ public class GameManager : MonoBehaviour
         grassManager.Load();
         grassManager.GenerateGrass();
 
+        treeManager.Load();
+        treeManager.GenerateForest();
     }
 
     void generateTerrain() // begins terrain generating, by iterating through all Terrain instances and invoking terrain making method

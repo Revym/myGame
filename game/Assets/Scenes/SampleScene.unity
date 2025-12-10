@@ -1049,6 +1049,11 @@ MonoBehaviour:
   movementSpeedGain: 8
   jumpHeight: 1.25
   gravity: 20
+  stickToGroundForce: 5
+  groundCheckDistance: 0.2
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
   exitMenu: {fileID: 0}
   jumpControlMultiplier: 0.8
 --- !u!143 &147150177
@@ -1360,6 +1365,11 @@ MonoBehaviour:
   movementSpeedGain: 8
   jumpHeight: 1.25
   gravity: 20
+  stickToGroundForce: 5
+  groundCheckDistance: 0.2
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
   exitMenu: {fileID: 0}
   jumpControlMultiplier: 0.8
 --- !u!143 &229568091
@@ -2448,6 +2458,11 @@ MonoBehaviour:
   movementSpeedGain: 8
   jumpHeight: 1.25
   gravity: 20
+  stickToGroundForce: 5
+  groundCheckDistance: 0.2
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
   exitMenu: {fileID: 0}
   jumpControlMultiplier: 0.8
 --- !u!143 &471587825
@@ -2747,6 +2762,75 @@ CapsuleCollider:
   m_Height: 0.37
   m_Direction: 1
   m_Center: {x: 0, y: 0.15, z: 0}
+--- !u!1001 &533810108
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 32bd926aa377a2644bc250a616a010d4, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 32bd926aa377a2644bc250a616a010d4, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.59751487
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 32bd926aa377a2644bc250a616a010d4, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 32bd926aa377a2644bc250a616a010d4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 13.733114
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 32bd926aa377a2644bc250a616a010d4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.12
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 32bd926aa377a2644bc250a616a010d4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -27.036545
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 32bd926aa377a2644bc250a616a010d4, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 32bd926aa377a2644bc250a616a010d4, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 32bd926aa377a2644bc250a616a010d4, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 32bd926aa377a2644bc250a616a010d4, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 32bd926aa377a2644bc250a616a010d4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 32bd926aa377a2644bc250a616a010d4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 32bd926aa377a2644bc250a616a010d4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 32bd926aa377a2644bc250a616a010d4, type: 3}
+      propertyPath: m_Name
+      value: pineTree3
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 32bd926aa377a2644bc250a616a010d4, type: 3}
 --- !u!1 &539759723
 GameObject:
   m_ObjectHideFlags: 0
@@ -5051,6 +5135,11 @@ MonoBehaviour:
   movementSpeedGain: 8
   jumpHeight: 1.25
   gravity: 20
+  stickToGroundForce: 5
+  groundCheckDistance: 0.2
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
   exitMenu: {fileID: 0}
   jumpControlMultiplier: 0.8
 --- !u!143 &966136755
@@ -5798,6 +5887,11 @@ MonoBehaviour:
   movementSpeedGain: 8
   jumpHeight: 1.25
   gravity: 20
+  stickToGroundForce: 5
+  groundCheckDistance: 0.2
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
   exitMenu: {fileID: 0}
   jumpControlMultiplier: 0.8
 --- !u!1 &1118863078 stripped
@@ -10144,6 +10238,11 @@ MonoBehaviour:
   movementSpeedGain: 8
   jumpHeight: 1.25
   gravity: 20
+  stickToGroundForce: 5
+  groundCheckDistance: 0.2
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
   exitMenu: {fileID: 0}
   jumpControlMultiplier: 0.8
 --- !u!143 &2073511624
@@ -10975,3 +11074,4 @@ SceneRoots:
   - {fileID: 1458878039}
   - {fileID: 1348095690}
   - {fileID: 1832800710}
+  - {fileID: 533810108}

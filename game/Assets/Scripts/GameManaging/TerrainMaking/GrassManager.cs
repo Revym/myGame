@@ -78,35 +78,52 @@ public class GrassManager : MonoBehaviour
     private Dictionary<Vector2Int, GrassChunk> chunks = new Dictionary<Vector2Int, GrassChunk>();
     private Plane[] frustumPlanes;
 
+    [Header("Debug")]
+    [Tooltip("Rysuje cały las, ignorując kamerę i odległość. UWAGA: Może obniżyć FPS!")]
+    public bool debugRenderAll = false;
+
     void Update()
     {
         if (chunks.Count == 0 || playerCamera == null) return;
+        if (!debugRenderAll && playerCamera == null) return;
 
-        GeometryUtility.CalculateFrustumPlanes(playerCamera, frustumPlanes);
-        Vector3 cameraPosition = playerCamera.transform.position;
+        Vector3 cameraPosition = Vector3.zero;
+
+        if (!debugRenderAll && playerCamera != null)
+        {
+            GeometryUtility.CalculateFrustumPlanes(playerCamera, frustumPlanes);
+            cameraPosition = playerCamera.transform.position;
+        }
+        
 
         foreach (GrassChunk chunk in chunks.Values)
         {
-            if (!GeometryUtility.TestPlanesAABB(frustumPlanes, chunk.bounds)) continue;
+            float scaleMultiplier = 1.0f; 
+            float distanceToChunk = 0f;
 
-            float distanceToChunk = Vector3.Distance(chunk.bounds.center, cameraPosition);
-            if (distanceToChunk > renderDistance) continue;
-
-            // --- 1. OBLICZANIE MNOŻNIKA SKALI ---
-            float scaleMultiplier = 1.0f;
-            float fadeStart = renderDistance - fadeRange;
-
-            if (distanceToChunk > fadeStart)
+            // Wykonujemy sprawdzenia TYLKO jeśli NIE jest włączony tryb debug
+            if (!debugRenderAll)
             {
-                // Obliczamy jak daleko jesteśmy w strefie zanikania (0..1)
-                float t = (distanceToChunk - fadeStart) / fadeRange;
-                // Im dalej, tym mniejsza skala (od 1.0 do 0.0)
-                scaleMultiplier = Mathf.Lerp(1.0f, 0.0f, t);
+                // A. Frustum Culling (czy chunk jest w kadrze?)
+                if (!GeometryUtility.TestPlanesAABB(frustumPlanes, chunk.bounds)) continue;
+
+                // B. Distance Check
+                distanceToChunk = Vector3.Distance(chunk.bounds.center, cameraPosition);
+                if (distanceToChunk > renderDistance) continue;
+
+                // C. Fading Logic (zmniejszanie trawy przy granicy widzenia)
+                float fadeStart = renderDistance - fadeRange;
+                if (distanceToChunk > fadeStart)
+                {
+                    float t = (distanceToChunk - fadeStart) / fadeRange;
+                    scaleMultiplier = Mathf.Lerp(1.0f, 0.0f, t);
+                }
+
+                // Optymalizacja: Jeśli trawa jest mikroskopijna, nie rysuj jej wcale
+                if (scaleMultiplier < 0.05f) continue;
             }
 
-            // Optymalizacja: Jeśli trawa jest mikroskopijna, nie rysuj jej wcale
-            if (scaleMultiplier < 0.05f) continue;
-            // ------------------------------------
+
 
             foreach (var kvp in chunk.matricesByType)
             {
@@ -116,9 +133,15 @@ public class GrassManager : MonoBehaviour
 
                 // LOD Logic
                 Mesh meshToDraw = type.mesh;
-                if (distanceToChunk > lodDistance && type.meshLOD != null)
+                
+                // LOD sprawdzamy tylko w normalnym trybie. 
+                // W trybie DebugRenderAll zawsze rysujemy najlepszy mesh (base).
+                if (!debugRenderAll && type.meshLOD != null)
                 {
-                    meshToDraw = type.meshLOD;
+                    if (distanceToChunk > lodDistance)
+                    {
+                        meshToDraw = type.meshLOD;
+                    }
                 }
 
                 for (int i = 0; i < matrices.Count; i += BATCH_SIZE)
@@ -233,9 +256,8 @@ public class GrassManager : MonoBehaviour
     {
         chunks.Clear();
     }
-    // ...
+    
 
-    // --- ZMODYFIKOWANA METODA ŁADOWANIA ---
     private void LoadGrassTypes()
     {
         grassTypes.Clear();
