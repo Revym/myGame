@@ -16,7 +16,7 @@ public class TreeSpawner : MonoBehaviour
 
     public void Start()
     {
-        treePrefab = Resources.Load<GameObject>("Models/tree/tree");
+        treePrefab = Resources.Load<GameObject>("Models/tree/pine tree/pineTree 1");
 
     }
 

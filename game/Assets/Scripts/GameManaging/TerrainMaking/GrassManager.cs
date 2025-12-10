@@ -55,7 +55,7 @@ public class GrassManager : MonoBehaviour
     public int chunkSize = 32;
     public Camera playerCamera;
 
-    private int spawnHeight = 50;
+    private int spawnHeight = 100;
     private Texture2D grassHeightMap;
     private MaterialPropertyBlock propertyBlock;
 
