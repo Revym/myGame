@@ -38,7 +38,8 @@ public class TreeManager : MonoBehaviour
     [Header("Ustawienia Lasu")]
     private int height;
     private int width;
-    public float treeDensity = 1.0f;
+    public bool randomize = false;
+    public float treeDensity = 5.0f;
     public float noiseScale = 0.05f;
     [Range(0, 1)] public float forestThreshold = 0.4f;
     public float mapScale = 4f;
@@ -103,6 +104,13 @@ public class TreeManager : MonoBehaviour
         offsetZ = Random.Range(0, 9999);
 
         map = PerlinNoise.GenerateTexture(mapScale, offsetX, offsetZ, width, height);
+
+        if (randomize)
+        {
+            treeDensity = Random.Range(5f, 9f);
+            mapScale = Random.Range(2f,5f);
+            forestThreshold = Random.Range(0.4f, 0.7f);
+        }
     }
 
     public void GenerateForest()

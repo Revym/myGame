@@ -700,7 +700,6 @@ GameObject:
   - component: {fileID: 847313141}
   - component: {fileID: 847313143}
   - component: {fileID: 847313144}
-  - component: {fileID: 847313145}
   - component: {fileID: 847313146}
   m_Layer: 0
   m_Name: GameManagerObject
@@ -785,7 +784,7 @@ MonoBehaviour:
   - grass1-2
   - grass3
   - grass4p
-  debugRenderAll: 0
+  debugRenderAll: 1
 --- !u!114 &847313144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -799,23 +798,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   terrainParent: {fileID: 1606710949}
---- !u!114 &847313145
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 847313139}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a766ec1948913d43983c027978ea0e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  xStart: 0
-  zStart: 0
-  xEnd: 256
-  zEnd: 256
-  amountOfTrees: 10
 --- !u!114 &847313146
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -830,15 +812,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   treeMesh: {fileID: 0}
   treeMaterials: []
-  treeDensity: 7
+  randomize: 1
+  treeDensity: 6
   noiseScale: 0.05
   forestThreshold: 0.5
-  mapScale: 2
+  mapScale: 4
   randomOffset: 1.92
   playerCamera: {fileID: 1750145350}
   renderDistance: 300
   chunkSize: 64
-  debugRenderAll: 0
+  debugRenderAll: 1
 --- !u!1001 &914873976
 PrefabInstance:
   m_ObjectHideFlags: 0
