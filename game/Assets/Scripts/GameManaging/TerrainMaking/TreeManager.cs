@@ -36,6 +36,7 @@ public class TreeManager : MonoBehaviour
     public Material[] treeMaterials;
 
     [Header("Ustawienia Lasu")]
+    public string treeFileName = "pineTree4";
     private int height;
     private int width;
     public bool randomize = false;
@@ -49,6 +50,7 @@ public class TreeManager : MonoBehaviour
     private int offsetX;
     private int offsetZ;
     private int spawnHeight = 100;
+    public float heightOffset = 2.75f;
 
     [Header("Culling Settings")]
     public Camera playerCamera;
@@ -75,7 +77,7 @@ public class TreeManager : MonoBehaviour
         // Inicjalizacja tablicy płaszczyzn
         frustumPlanes = new Plane[6];
 
-        var prefab = Resources.Load<GameObject>("Models/tree/pine tree/pineTree2");
+        var prefab = Resources.Load<GameObject>("Models/tree/pine tree/"+treeFileName);
         
         if (prefab == null) { Debug.LogError("Failed to load tree"); return; }
 
@@ -109,7 +111,7 @@ public class TreeManager : MonoBehaviour
         {
             treeDensity = Random.Range(5f, 9f);
             mapScale = Random.Range(2f,5f);
-            forestThreshold = Random.Range(0.4f, 0.7f);
+            forestThreshold = Random.Range(0.35f, 0.7f);
         }
     }
 
@@ -138,7 +140,7 @@ public class TreeManager : MonoBehaviour
                 if (!Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, Mathf.Infinity)) continue;
                 if (hit.collider.GetComponent<Terrain>() == null) continue;
 
-                float y = hit.point.y;
+                float y = hit.point.y + heightOffset;
 
                 Vector3 position = new Vector3(x2, y, z2);
                 Quaternion rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
@@ -162,7 +164,7 @@ public class TreeManager : MonoBehaviour
                 chunk.AddInstance(position, rotation, scale);
             }
         }
-        Debug.Log($"Wygenerowano las: {chunks.Count} chunków.");
+        //Debug.Log($"Wygenerowano las: {chunks.Count} chunków.");
     }
 
     void Update()

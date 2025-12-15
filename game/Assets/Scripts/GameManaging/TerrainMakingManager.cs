@@ -56,7 +56,7 @@ public class TerrainMakingManager : MonoBehaviour
 
     public void RandomizeValues()
     {
-        heightMultiplier = Random.Range(40, 70);
+        heightMultiplier = Random.Range(40, 100);
 
         terrainScale1 = Random.Range(6f, 8f);
         terrainScale2 = Random.Range(1.5f, 2.5f);
