@@ -52,6 +52,7 @@ public class TreeManager : MonoBehaviour
     private int spawnHeight = 100;
     public float heightOffset = 2.75f;
 
+
     [Header("Culling Settings")]
     public Camera playerCamera;
     public float renderDistance = 350f; 
@@ -64,6 +65,8 @@ public class TreeManager : MonoBehaviour
     private Dictionary<Vector2Int, TreeChunk> chunks = new Dictionary<Vector2Int, TreeChunk>();
     private Plane[] frustumPlanes;
     private const int BATCH_SIZE = 1023;
+
+    private Matrix4x4[] cachedBatch = new Matrix4x4[BATCH_SIZE];
 
     public void Load()
     {
@@ -201,10 +204,10 @@ public class TreeManager : MonoBehaviour
             {
                 int count = Mathf.Min(BATCH_SIZE, matrices.Count - i);
                 
-                // Tutaj niestety musimy stworzyć tymczasową tablicę dla DrawMeshInstanced
-                // (To jest standardowy koszt GPU Instancingu w Unity bez ComputeBufferów)
-                Matrix4x4[] batch = new Matrix4x4[count];
-                matrices.CopyTo(i, batch, 0, count);
+                // --- POPRAWKA 2: ZERO ALOKACJI ---
+                // Kopiujemy dane do istniejącej tablicy zamiast tworzyć nową.
+                // Używamy cachedBatch, który zadeklarowaliśmy na górze klasy.
+                matrices.CopyTo(i, cachedBatch, 0, count);
 
                 // Rysujemy WSZYSTKIE materiały (pień + liście)
                 for (int m = 0; m < treeMesh.subMeshCount; m++)
@@ -215,7 +218,7 @@ public class TreeManager : MonoBehaviour
                             treeMesh, 
                             m, 
                             treeMaterials[m], 
-                            batch, 
+                            cachedBatch, 
                             count,
                             null,
                             UnityEngine.Rendering.ShadowCastingMode.On, // Włączamy cienie dla drzew

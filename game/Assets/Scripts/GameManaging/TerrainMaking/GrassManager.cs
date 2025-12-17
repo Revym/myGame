@@ -78,6 +78,9 @@ public class GrassManager : MonoBehaviour
     private Dictionary<Vector2Int, GrassChunk> chunks = new Dictionary<Vector2Int, GrassChunk>();
     private Plane[] frustumPlanes;
 
+    private Matrix4x4[] cachedBatch = new Matrix4x4[BATCH_SIZE];
+
+
     [Header("Debug")]
     [Tooltip("Rysuje cały las, ignorując kamerę i odległość. UWAGA: Może obniżyć FPS!")]
     public bool debugRenderAll = false;
@@ -94,12 +97,18 @@ public class GrassManager : MonoBehaviour
             GeometryUtility.CalculateFrustumPlanes(playerCamera, frustumPlanes);
             cameraPosition = playerCamera.transform.position;
         }
+
+        // Optymalizacja: cache kwadratu dystansu
+        float renderDistSqr = renderDistance * renderDistance;
+        float fadeStart = renderDistance - fadeRange;
+        float fadeStartSqr = fadeStart * fadeStart;
+        float lodDistSqr = lodDistance * lodDistance;
         
 
         foreach (GrassChunk chunk in chunks.Values)
         {
             float scaleMultiplier = 1.0f; 
-            float distanceToChunk = 0f;
+            float distSqr = 0f;
 
             // Wykonujemy sprawdzenia TYLKO jeśli NIE jest włączony tryb debug
             if (!debugRenderAll)
@@ -108,14 +117,14 @@ public class GrassManager : MonoBehaviour
                 if (!GeometryUtility.TestPlanesAABB(frustumPlanes, chunk.bounds)) continue;
 
                 // B. Distance Check
-                distanceToChunk = Vector3.Distance(chunk.bounds.center, cameraPosition);
-                if (distanceToChunk > renderDistance) continue;
+                distSqr = chunk.bounds.SqrDistance(cameraPosition);
+                if (distSqr > renderDistSqr) continue;
 
                 // C. Fading Logic (zmniejszanie trawy przy granicy widzenia)
-                float fadeStart = renderDistance - fadeRange;
-                if (distanceToChunk > fadeStart)
+                if (distSqr > fadeStartSqr)
                 {
-                    float t = (distanceToChunk - fadeStart) / fadeRange;
+                    float exactDist = Mathf.Sqrt(distSqr);
+                    float t = (exactDist - fadeStart) / fadeRange;
                     scaleMultiplier = Mathf.Lerp(1.0f, 0.0f, t);
                 }
 
@@ -138,7 +147,7 @@ public class GrassManager : MonoBehaviour
                 // W trybie DebugRenderAll zawsze rysujemy najlepszy mesh (base).
                 if (!debugRenderAll && type.meshLOD != null)
                 {
-                    if (distanceToChunk > lodDistance)
+                    if (distSqr > lodDistSqr)
                     {
                         meshToDraw = type.meshLOD;
                     }
@@ -147,15 +156,16 @@ public class GrassManager : MonoBehaviour
                 for (int i = 0; i < matrices.Count; i += BATCH_SIZE)
                 {
                     int count = Mathf.Min(BATCH_SIZE, matrices.Count - i);
-                    Matrix4x4[] batch = new Matrix4x4[count];
-                    matrices.CopyTo(i, batch, 0, count);
+                    
+                    matrices.CopyTo(i, cachedBatch, 0, count);
 
                     // --- 2. MODYFIKACJA SKALI W BATCHU ---
                     // Wykonujemy to TYLKO jeśli jesteśmy w strefie zanikania
                     if (scaleMultiplier < 0.99f)
                     {
                         for (int k = 0; k < count; k++)
-                        {
+                        {   
+                            /*
                             // Pobieramy aktualną macierz
                             Matrix4x4 mat = batch[k];
 
@@ -169,6 +179,13 @@ public class GrassManager : MonoBehaviour
 
                             // Nadpisujemy macierz w batchu nową, spłaszczoną wersją
                             batch[k] = Matrix4x4.TRS(pos, rot, scale);
+                            */
+
+                            // nowa logika:
+
+                            cachedBatch[k].m01 *= scaleMultiplier;
+                            cachedBatch[k].m11 *= scaleMultiplier;
+                            cachedBatch[k].m21 *= scaleMultiplier;
                         }
                     }
                     // -------------------------------------
@@ -177,7 +194,7 @@ public class GrassManager : MonoBehaviour
                         meshToDraw,
                         0,
                         type.material,
-                        batch, 
+                        cachedBatch, 
                         count,
                         null, 
                         UnityEngine.Rendering.ShadowCastingMode.Off,
