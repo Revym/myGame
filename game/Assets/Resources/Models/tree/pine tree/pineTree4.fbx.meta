@@ -7,6 +7,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Bark.001
+    second: {fileID: 2100000, guid: 02264ff68bebfc44ca580cd546716881, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: branch3.001
     second: {fileID: 2100000, guid: 445f461bc991893439fd3807aecd17c7, type: 2}
   materials:

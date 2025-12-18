@@ -85,6 +85,7 @@ public class GrassManager : MonoBehaviour
     [Tooltip("Rysuje cały las, ignorując kamerę i odległość. UWAGA: Może obniżyć FPS!")]
     public bool debugRenderAll = false;
 
+
     void Update()
     {
         if (chunks.Count == 0 || playerCamera == null) return;
@@ -159,36 +160,16 @@ public class GrassManager : MonoBehaviour
                     
                     matrices.CopyTo(i, cachedBatch, 0, count);
 
-                    // --- 2. MODYFIKACJA SKALI W BATCHU ---
-                    // Wykonujemy to TYLKO jeśli jesteśmy w strefie zanikania
                     if (scaleMultiplier < 0.99f)
                     {
                         for (int k = 0; k < count; k++)
                         {   
-                            /*
-                            // Pobieramy aktualną macierz
-                            Matrix4x4 mat = batch[k];
-
-                            // Wyciągamy rotację i pozycję (kolumna 3 to pozycja)
-                            Vector3 pos = new Vector3(mat.m03, mat.m13, mat.m23);
-                            Quaternion rot = mat.rotation;
-                            Vector3 scale = mat.lossyScale;
-
-                            // Mnożymy wysokość (Y) przez nasz fade factor
-                            scale.y *= scaleMultiplier;
-
-                            // Nadpisujemy macierz w batchu nową, spłaszczoną wersją
-                            batch[k] = Matrix4x4.TRS(pos, rot, scale);
-                            */
-
-                            // nowa logika:
 
                             cachedBatch[k].m01 *= scaleMultiplier;
                             cachedBatch[k].m11 *= scaleMultiplier;
                             cachedBatch[k].m21 *= scaleMultiplier;
                         }
                     }
-                    // -------------------------------------
 
                     Graphics.DrawMeshInstanced(
                         meshToDraw,
@@ -204,6 +185,7 @@ public class GrassManager : MonoBehaviour
             }
         }
     }
+
 
     // ... (GenerateGrass i ClearGrass bez zmian) ...
     [ContextMenu("Generate Grass")]
@@ -268,6 +250,7 @@ public class GrassManager : MonoBehaviour
         }
     }
     
+
     [ContextMenu("Clear Grass")]
     public void ClearGrass()
     {
@@ -323,6 +306,7 @@ public class GrassManager : MonoBehaviour
             });
         }
     }
+
 
     public void Load()
     {
