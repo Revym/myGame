@@ -916,18 +916,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66bfee6933ea9d54f9a05e6c341e06ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  treeMesh: {fileID: 0}
-  treeMaterials: []
   treeFileName: pineTree4
+  lod1FileName: pineTreeLOD1
+  lodTransitionDistance: 175
   randomize: 1
   treeDensity: 6
-  noiseScale: 0.05
   forestThreshold: 0.5
   mapScale: 4
   randomOffset: 1.92
   heightOffset: 1.5
   playerCamera: {fileID: 1750145350}
-  renderDistance: 300
+  renderDistance: 700
   chunkSize: 64
   debugRenderAll: 0
 --- !u!1 &858680398
